@@ -1,0 +1,59 @@
+<div ng-include="'views/home/header.html'"></div>
+		<div class="col s1">
+			<div class="row">
+    			<div class="panel panel-default col s6 offset-s3">
+				  	<div class="panel-heading">
+				    	<p style="color:red">{{message}}</p>
+				 	</div>
+			  		<div class="panel-body z-depth-2 login-panel">
+			  		  	<form class="login-form" accept-charset="UTF-8" role="form" ng-submit="login();">
+                		    <fieldset>
+                    <div class="row">
+                      <div class="col s1">
+			    			        <i class="small mdi-action-account-circle" style="margin-top: 5px"></i>
+  			    			  	</div>
+                      <div class="input-field col s10">
+                            <input id="first_name" type="text" ng-model="username" class="validate" value="">
+       						    	<label for="first_name">Username</label>
+          						</div>
+    				</div>	
+  					<div class="row">
+			    		<div class="col s1">
+                        	<i class="small mdi-communication-vpn-key"></i>
+                    	</div>  
+                    	<div class="input-field col s10">
+					  	    <input id="password" type="password" ng-model="password" class="validate" value="">
+					    	<label for="password">Password</label>
+						</div>
+                  	</div>
+					<br><br>
+					<div class="row">
+	                    <div class="col s6 offset-s4">
+	                    	<button class="btn-large waves-effect waves-light blue darken-4" ng-class="{disabled : (loading||username==''||password=='')}" type="submit" name="action">Login
+								<i class="mdi-content-send right"></i>
+							</button>
+	          			</div>
+	          		</div>
+	          		<div class="row">
+	                    <div class="col s3 offset-s5">
+	                       <div class="preloader-wrapper big" ng-class="{active : loading}">
+	                        <div class="spinner-layer spinner-blue-only">
+	                          <div class="circle-clipper left">
+	                            <div class="circle"></div>
+	                          </div><div class="gap-patch">
+	                            <div class="circle"></div>
+	                          </div><div class="circle-clipper right">
+	                            <div class="circle"></div>
+	                          </div>
+	                        </div>
+	                      </div>
+	                    </div>
+                    </div>
+			    			</fieldset>
+			      		</form>
+			    	</div>
+				</div>
+			</div>
+	</div>
+
+</div>

@@ -1,0 +1,156 @@
+<div ng-include="'views/home/header.html'"></div>
+<button id="previous-button" class="btn-floating btn-large waves-effect waves-light red previous-button z-depth-3" ng-click="prev()"><i class="material-icons">&#xE314;</i></button>
+
+<div style="min-height:150%">
+	<center>
+		<form  class="form-start" >
+			<div class="row" class="page-heading">
+				<h1 class="col s6 offset-s3">View Reports</h1>        
+		  	</div>
+		  	<div class="row">
+	  		<div class="col s2 offset-s5">
+		  	<div style="display:{{(loading==false)? 'none':'true';}}" class="preloader-wrapper big active">
+		      <div class="spinner-layer spinner-blue">
+		        <div class="circle-clipper left">
+		          <div class="circle"></div>
+		        </div><div class="gap-patch">
+		          <div class="circle"></div>
+		        </div><div class="circle-clipper right">
+		          <div class="circle"></div>
+		        </div>
+		      </div>
+
+		      <div class="spinner-layer spinner-red">
+		        <div class="circle-clipper left">
+		          <div class="circle"></div>
+		        </div><div class="gap-patch">
+		          <div class="circle"></div>
+		        </div><div class="circle-clipper right">
+		          <div class="circle"></div>
+		        </div>
+		      </div>
+
+		      <div class="spinner-layer spinner-yellow">
+		        <div class="circle-clipper left">
+		          <div class="circle"></div>
+		        </div><div class="gap-patch">
+		          <div class="circle"></div>
+		        </div><div class="circle-clipper right">
+		          <div class="circle"></div>
+		        </div>
+		      </div>
+
+		      <div class="spinner-layer spinner-green">
+		        <div class="circle-clipper left">
+		          <div class="circle"></div>
+		        </div><div class="gap-patch">
+		          <div class="circle"></div>
+		        </div><div class="circle-clipper right">
+		          <div class="circle"></div>
+		        </div>
+		      </div>
+		    </div>
+			</div>
+			<!-- <div class="col s3">
+		  			<button ng-disabled="selectedVersionStatus==false||loading==true" class="waves-effect waves-light btn-large blue darken-4 start-button"><i class="material-icons right">send</i>Next</button>			
+				</div> -->
+			</div>
+			<div class="page-heading">
+			<div class="row">
+				<div class="input-field col s2 offset-s2">
+			      <select class="browser-default" ng-model="searchIn">
+				    <option value="0" selected>Edi Specifications</option>
+				    <option value="1">Edi File</option>
+				  </select>
+		  		</div>
+		  		<div class="input-field col s2">
+					<input class="datepicker" ng-model="filterFrom" ng-change="dateValidator(0)" min="2016-03-01" max="{{today}}">
+					<label class="active" for="first_name">from</label>
+				</div>
+				<div class="input-field col s2">
+					<input class="datepicker" ng-model="filterTo" ng-change="dateValidator(1)" min="2016-03-01" max="{{today}}">
+					<label class="active" for="first_name">to</label>
+				</div>
+				<div class="input-field col s2">
+			      <select class="browser-default" ng-model="reportAttribute">
+				    <option value="Agency" selected>Agency</option>				    
+				    <option value="Username">User</option>
+				    <option value="BusinessPartner">Business Partner</option>
+				    <option value="TransactionSet">Transaction</option>
+				    <option value="Version">Version</option>
+				  </select>
+		  		</div>
+		  	</div>
+		  	<div class="row">
+		  		<button ng-click="getReport()" ng-disabled="loading==true||filterFrom==undefined||filterTo==undefined||reportAttribute==''" class="waves-effect waves-light btn-large blue darken-4"><i class="material-icons right">send</i>GET report</button>	
+		  		<button ng-click="print()" class="btn-large waves-effect waves-light blue darken-4" ng-disabled="loading==true||filterFrom==undefined||filterTo==undefined||reportAttribute==''" type="submit" name="action"><i class="material-icons right">print</i>print</button>
+		  	</div>
+		  	</div>
+		  	<div class="row" class="preview-space">
+		  		<h2><pre><u>Report</u></pre></h2>
+		  	</div>
+		  	<div class="row" class="preview-space">
+<div class="input-field col s10 offset-s2" style="text-align: left;"><pre>File Type : {{displayFileType}}<br>Domain    : {{displayDomain}}<br>From      : {{displayFilterFrom.toString().substring(0,15)}}<br>To        : {{displayFilterTo.toString().substring(0,15)}}<br>Total     : {{numberOfLogs}} logs</pre></div>
+		  	</div>
+		  	<div class="row" class="preview-space">
+		  		<div style="width: 50%;float: left" class="preview-graph-1">
+		  		<nvd3-discrete-bar-chart
+			    	data="barChartData"
+			        id="barChart"
+			        showXAxis="true"
+			        showYAxis="true"
+			        xAxisTickFormat="xAxisTickFormatFunction()"
+			        width="600"
+			        height="400"
+			        showValues="true"
+			        staggerLabels="true"
+			        tooltips="true">
+			        	<svg></svg>
+			    </nvd3-discrete-bar-chart>
+			    </div>
+			    <div style="width: 50%;float: right;" class="preview-graph-2">
+		  		<!-- <nvd3-pie-chart
+			    	data="chartData"
+			        id="pieChart"
+			        width="550"
+			        height="350"
+			        x="xFunction()"
+			        y="yFunction()"
+			        showLabels="true">
+			        <svg></svg>
+			    </nvd3-pie-chart> -->
+			    <nvd3-pie-chart
+			    	data="pieChartData"
+			        id="exampleId"
+			        width="600"
+			        height="350"
+			        x="xFunction()"
+			        y="yFunction()"
+			        showLabels="true"
+			        showLegend="true"
+			        tooltips="true"
+			        interactive="true">
+			        <svg></svg>
+			    </nvd3-pie-chart>
+			    </div>
+		  	</div>
+		  	<!-- <div class="row">
+		  		<div class="col s9 offset-s3">
+		  		<nvd3-pie-chart
+			    	data="pieChartData"
+			        id="exampleId"
+			        width="550"
+			        height="350"
+			        x="xFunction()"
+			        y="yFunction()"
+			        showLabels="true"
+			        showLegend="true"
+			        tooltips="true"
+			        interactive="true">
+			        <svg></svg>
+			    </nvd3-pie-chart>
+			    </div>
+		  	</div> -->
+		</form> 			  
+	</center>
+</div>

@@ -1,0 +1,123 @@
+<div ng-include="'views/home/header.html'"></div>
+<div class="sidebar z-depth-2 hide-on-med-and-down">
+	<!-- <button id="prev-button" ng-click="prev();" class="waves-effect waves-light btn-large red darken-2 start-button" ng-disabled="true">Previous</button> -->
+	<div class="row">
+		<ul class="col s11 table-of-contents">
+			<li><a href='#!' class="active">Agency</a></li>
+			<li><a href='#!' class="not-active">Version</a></li>
+			<li><a href='#!' class="not-active">Transaction</a></li>
+			<li><a href='#!' class="not-active">Segments</a></li>
+			<li><a href='#!' class="not-active">Elements</a></li>
+			<li><a href='#!' class="not-active">Additional Data</a></li>
+			<li><a href='#!' class="not-active">Document</a></li>
+		</ul>
+	</div>
+	
+	<button id="next-button" ng-click="next();" ng-disabled="selectedAgency==''||loading==true" class="waves-effect waves-light btn-large blue darken-4 start-button"><i class="material-icons right">send</i>Next</button>	
+</div>
+<button class="btn-floating btn-large waves-effect waves-light red previous-button z-depth-3" ng-disabled="true"><i class="material-icons">&#xE314;</i></button>
+
+	<center>
+			<form  class="form-start" >
+				<div class="row">
+					<div class="progress blue lighten-3 progress-bar-status">
+  						<div class="determinate blue darken-4" id="progressBar"></div>
+					</div>
+				</div>
+				<div class="row">
+					<h1 class="col s6 offset-s2">Select Agency</h1>        
+			  	</div>			
+				<div class="row">
+					<div class="col s1 offset-s2">
+						<p class="form-field-name">Agency :</p>
+					</div>
+					<div class="input-field col s4">
+					      <select class="browser-default" ng-model="selectedAgency">
+						    <option value="" disabled selected>Choose Agency</option>
+						    <option ng-repeat="x in agency track by $index" value="{{$index}}">{{x.Description}}</option>
+						  </select>
+				  	</div>
+			  	</div>
+			  	<div class="row">
+			  		<div class="col s2 offset-s2">
+						<p>Selected Agency :</p>
+					</div>
+					<div class="col s3">
+					   <p>{{agency[selectedAgency]['Agency']}} - {{agency[selectedAgency]['Description']}}</p>
+				  	</div>
+			  	</div>
+			  	<!-- <div class="row">
+			  		<div class="col s1 offset-s4">
+						<p class="form-field-name">Version :</p>
+					</div>
+					<div class="input-field col s4">
+					      <select class="browser-default" ng-model="selectedVersion" ng-change="getTransactionSet()">
+						    <option value="" disabled selected>Version</option>
+						    <option ng-repeat="x in version track by $index" value="{{$index}}">{{x.Version+" : "+x.Description}}</option>
+						  </select>
+				  	</div>
+			  	</div>
+			  	<div class="row">
+			  		<div class="col s1 offset-s4">
+						<p class="form-field-name">Transaction Set :</p>
+					</div>
+					<div class="input-field col s4">
+					      <select class="browser-default" ng-model="selectedTransactionSet">
+						    <option value="" disabled selected>Transaction Set</option>
+						    <option ng-repeat="x in transactionSet track by $index" value="{{$index}}">{{x.TransactionSet+" : "+x.Description}}</option>
+						  </select>
+				  	</div>
+			  	</div>-->
+			  	<!-- <div class="row">
+			  		<div class="col s2 offset-s7">
+			  			<button ng-click="next()" ng-disabled="selectedAgency==''||loading==true" class="waves-effect waves-light btn-large blue darken-4 start-button"><i class="material-icons right">send</i>Next</button>			
+					</div>
+				</div> -->
+			</form>
+		  	<div class="row">
+		  		<div class="col s2 offset-s4">
+			  	<div style="display : {{(loading==false)? 'none':'true';}}" class="preloader-wrapper big active">
+			      <div class="spinner-layer spinner-blue">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+
+			      <div class="spinner-layer spinner-red">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+
+			      <div class="spinner-layer spinner-yellow">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+
+			      <div class="spinner-layer spinner-green">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+			    </div>
+				</div> 
+			</div>   
+	</center>
+</div>

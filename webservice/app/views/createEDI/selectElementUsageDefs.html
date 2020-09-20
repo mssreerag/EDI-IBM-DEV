@@ -1,0 +1,326 @@
+<div ng-include="'views/home/header.html'"></div>
+<div class="sidebar z-depth-2 hide-on-med-and-down">
+	<!-- <button id="prev-button" ng-click="prev()" class="waves-effect waves-light btn-large red darken-2 start-button">Previous</button>		 -->
+	<div class="row">
+		<ul class="col s11 table-of-contents">
+			<li><a href='#!'>Agency</a></li>
+			<li><a href='#!'>Version</a></li>
+			<li><a href='#!'>Transaction</a></li>
+			<li><a href='#!'>Segments</a></li>
+			<li><a href='#!' class="active">Elements</a></li>
+			<li><a href='#!' class="not-active">Additional Data</a></li>
+			<li><a href='#!' class="not-active">Document</a></li>
+		</ul>
+	</div>
+	<div class="row">
+	<button id="next-button" ng-click="next();" ng-disabled="nextActivate==false||loading==true||emptySegments==true||(numberOfSelected<1&&numberOfSelected!=-1)" class="waves-effect waves-light btn-large blue darken-4 start-button"><i class="material-icons right">send</i>Next</button>	
+	</div>
+</div>
+<button class="btn-floating btn-large waves-effect waves-light red previous-button z-depth-3" ng-click="prev()"><i class="material-icons">&#xE314;</i></button>
+	<div style="min-height:125%">
+	<center>
+			<form  class="form-start" >
+				 <div class="row">
+					<div class="progress blue lighten-3 progress-bar-status">
+  						<div class="determinate blue darken-4" id="progressBar"></div>
+					</div>
+				</div>
+				<div class="row">
+					<h1 class="col s6 offset-s2">Select Elements</h1>        
+			  	</div>
+			  	<div class="row">		  	
+ 				<div class="col s2 offset-s4">
+			  	<div style="display:{{(loading==false)? 'none':'true';}}" class="preloader-wrapper big active">
+			      <div class="spinner-layer spinner-blue">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+
+			      <div class="spinner-layer spinner-red">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+
+			      <div class="spinner-layer spinner-yellow">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+
+			      <div class="spinner-layer spinner-green">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+			    </div>
+				</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s3 offset-s1">
+				  		<select class="browser-default" ng-model="selectedSegment" ng-change="findElements();">
+						    <option value="" style="background-color: #bbdefb" disabled selected>Choose Segment</option>
+						    <option ng-repeat="x in selectedSegments track by $index" value="{{x+','+selectedSegmentsPosition[$index]}}" style="background-color:{{(overallWorkSavedStatus[x+','+selectedSegmentsPosition[$index]]==true)?'#bbdefb':'#FFFFFF'}}" bgcolor="{{(overallWorkSavedStatus[x]==true)?'#e57373':'#FFFFFF'}}">{{(mandatoryElementStatus[x]=='true')?'':'*'}}{{x}} : Pos : {{selectedSegmentsPosition[$index]}}</option>
+						    <!-- <option ng-repeat="x in selectedSegments track by $index" value="{{x}}" style="background-color: #ef9a9a" bgcolor="#e57373">{{x}}</option>				 -->
+						</select>
+				  	</div>
+				  	<div class="input-field col s3 offset-s2">
+					  	<i class="material-icons prefix">search</i>
+					    <input ng-disabled="selectedSegment==''" placeholder="Search" ng-model="searchRecords" ng-change="search()" type="text" class="validate">
+          				<label class="active" for="first_name">Element Usage</label>
+				  	</div>				  				  			
+				</div>
+
+				    <!-- Modal Structure -->
+					  <div id="warningModal" class="modal">
+					    <div class="modal-content">
+					      <h2><i class="small material-icons right">warning</i><b>WARNING</b></h2>
+					      <p>The changes made are not saved</p>
+					    </div>
+					    <div class="modal-footer">
+					      <a ng-click="forceFindElements();" class=" modal-action modal-close waves-effect waves-green btn-flat">Continue Anyway</a>
+					      <a href="#!" ng-click="modalGoBack();" class=" modal-action modal-close waves-effect waves-green btn-flat">Go Back</a>
+					    </div>
+					  </div>
+				
+					<!-- Modal Declaration finish -->
+
+					<!-- Custom code modal -->
+					<div id="customCodeModal" class="modal modal-fixed-footer codeModal" style="top: 6%;">
+						<form>
+				    		<!-- <ul ng-if="!codeLoading">
+				    			<li ng-repeat="x in elementCodes" style="text-align: left">{{x.Description}}</li>					    	
+				   	 		</ul> -->
+				   	 		<div class="row modal-content">
+				   	 			<div class="col s3 code-modal-left-pane">
+				   	 				<p style="font-size: 150%;"><strong>Create Custom Code</strong></p><br>
+				   	 				<label class="active" for="code_value">Value</label>					   	 			
+				   	 				<input type="text" ng-model="customCodeValue" class="validate" name="code_value" placeholder="search">
+				   	 				<label class="active" for="code_description">Description</label>					   	 			
+				   	 				<input type="text" ng-model="customCodeDescription" class="validate" name="code_description" placeholder="search">
+				   	 				<button ng-click="saveCustomCode();" ng-disabled="customCodeValue == '' || customCodeDescription == ''" class="btn waves-effect waves-green blue darken-3" style="color: white;">Save</button>
+				   	 			</div>
+				   	 			<div class="col s8 offset-s4">
+						   	 		<p ng-repeat="x in customCode">
+								      <input type="checkbox" ng-model="x['select']" id="{{x.value}}"/>
+								      <label for="{{x.value}}" style="color:{{(x['select']==true)?'blue':'black';}}">{{x.value}} - {{x.description}}</label>
+								    </p>
+				   	 			</div>
+				   	 		</div>
+				   	 		<div class="modal-footer">
+						      <button ng-click="saveSelectedCustomCodes();" class="btn waves-effect waves-green blue darken-3" style="color: white;">Save</button>
+						      <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat blue darken-3 left" style="color: white;">Go Back</a>
+						    </div>
+				   	 	</form>
+					</div>
+					<!-- End Custom code modal -->
+					
+					<!-- Code Selection modal-->
+					  <div id="codeModal" class="modal modal-fixed-footer codeModal" style="top: 6%;">
+					    <!-- <div class="modal-content"> -->
+					      <!-- <h2><i class="small material-icons right">modal_edit</i><b>Select Codes for Element</b></h2>
+					 	  <p>Element : {{codeSelectedElement['Description']}}</p>
+					 	  <p>Position : {{codeSelectedElement['Position']}}</p>
+					 	  <h3>Codes</h3> -->
+					 	  <div class="row">		  	
+			 				<div class="col s2 offset-s5">
+						  	<div style="display:{{(codeLoading==false)? 'none':'true';}}" class="preloader-wrapper big active">
+						      <div class="spinner-layer spinner-blue">
+						        <div class="circle-clipper left">
+						          <div class="circle"></div>
+						        </div><div class="gap-patch">
+						          <div class="circle"></div>
+						        </div><div class="circle-clipper right">
+						          <div class="circle"></div>
+						        </div>
+						      </div>
+
+						      <div class="spinner-layer spinner-red">
+						        <div class="circle-clipper left">
+						          <div class="circle"></div>
+						        </div><div class="gap-patch">
+						          <div class="circle"></div>
+						        </div><div class="circle-clipper right">
+						          <div class="circle"></div>
+						        </div>
+						      </div>
+
+						      <div class="spinner-layer spinner-yellow">
+						        <div class="circle-clipper left">
+						          <div class="circle"></div>
+						        </div><div class="gap-patch">
+						          <div class="circle"></div>
+						        </div><div class="circle-clipper right">
+						          <div class="circle"></div>
+						        </div>
+						      </div>
+
+						      <div class="spinner-layer spinner-green">
+						        <div class="circle-clipper left">
+						          <div class="circle"></div>
+						        </div><div class="gap-patch">
+						          <div class="circle"></div>
+						        </div><div class="circle-clipper right">
+						          <div class="circle"></div>
+						        </div>
+						      </div>
+						    </div>
+							</div>
+						   </div>
+					    <div ng-if="!codeLoading" >
+					    	<form>
+					    		<!-- <ul ng-if="!codeLoading">
+					    			<li ng-repeat="x in elementCodes" style="text-align: left">{{x.Description}}</li>					    	
+					   	 		</ul> -->
+					   	 		<div ng-if="allElementCodes.length>0" class="row modal-content">
+					   	 			<div class="col s3 code-modal-left-pane">
+					   	 				<label class="active" for="code_select">Search Code</label>					   	 			
+					   	 				<input type="text" ng-change="searchCodes(codeSearch);" ng-model="codeSearch" class="validate" name="code_select" placeholder="search">
+					   	 				<p><b><u><i>Selected Codes</i></u></b> - {{numberOfCodesSelected}}/{{allElementCodes.length}}</p>
+					   	 				<!-- <ul>
+					   	 					<li ng-repeat="x in elementCodes" ng-if="x['select']==true">{{x.Description}}</li>
+					   	 				</ul> -->
+					   	 				<p ng-repeat="x in allElementCodes" ng-if="x['select']==true">{{x.Value}} - {{x.Description}}</p>
+					   	 				<!-- <p ng-repeat="x in "></p> -->
+					   	 			</div>
+					   	 			<div class="col s8 offset-s4">
+							   	 		<p ng-repeat="x in elementCodes">
+									      <input type="checkbox" ng-model="x['select']" id="{{x.Value}}" ng-click="modifyCodeSelection(x)"/>
+									      <label for="{{x.Value}}" style="color:{{(x['select']==true)?'blue':'black';}}">{{x.Value}} - {{x.Description}}</label>
+									    </p>
+					   	 			</div>
+					   	 			
+					   	 		</div>
+					   	 	</form>
+					    </div>
+					    <!-- </div> -->
+					    <div class="modal-footer">
+					      <button ng-disabled="codeSaveStatus==true" ng-click="saveCodes()" class="btn waves-effect waves-green blue darken-3" style="color: white;">Save</button>
+					      <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat blue darken-3 left" style="color: white;">Go Back</a>
+					    </div>
+					  </div>
+				
+					<!-- End Code selection modal-->
+				<div class="row">
+					<div class="col s2 offset-s1">
+			  			<button ng-click="saveElements();" ng-disabled="numberOfSelected<=0||loading==true||workSavedStatus==true" class="waves-effect waves-light btn-large red lighten-2 start-button"><i class="material-icons right">storage</i>Save</button>			
+					</div>
+					<!-- <div class="col s2">
+			  			<button ng-click="next();" ng-disabled="allCompleted==false" class="waves-effect waves-light btn-large blue darken-4 start-button"><i class="material-icons right">send</i>Next</button>
+			  		</div> -->
+					<div class="col s3 offset-s3">
+						<pagination
+							class="right"
+		   					page={{presentPage}}
+		    				page-size=5
+		    				total={{totalRecords}}
+		    				dots="...."
+		   					hide-if-empty="true"
+		    				adjacent="1"
+		    				scroll-top="false"
+		    				pagination-action="changePage(page)" />
+						<p>Showing {{presentPage*5-4}} to {{presentPage*5}} of {{totalRecords}} entries</p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="groups-table col s10">
+						<table class="bordered hoverable highlight">
+			        		<thead>
+			          			<tr>
+			          				<th data-field="ElementPosition">Position</th>
+			          				<th data-field="ElementId">Element ID</th>
+			              			<th data-field="Description">Description</th>
+			              			<th data-field="RequirementDesignator">Req.</th>
+			              			<th data-field="Group">Group.</th>			              				
+			              			<th ng-if="mode==1" data-field="Value">Value</th>				              					           
+			              			<th ng-if="mode!=1" data-field="Number of Codes">Codes</th>
+			              			<th ng-if="mode!=1" data-field="Code Select"></th>			              						              						           			              			
+			              			<th><input ng-model="selectAllStatus" ng-click="toggleElementUsageSelectAll()" type="checkbox" id="heading" />
+      									<label for="heading">Select All</label>
+      								</th>
+			              		</tr>
+			        		</thead>
+
+			        		<tbody>
+			        			<!-- <tr ng-repeat="x in visualRecords track by $index" ng-click="selectTransactionSet($index,x);" style="cursor: pointer;background-color:{{(x.Version==selectedVersion.id)?'#0d47a1':'#FFFFFF';}};color:{{(x.Version==selectedVersion.id)?'#FFFFFF':'#000000';}}">
+				        		 -->
+				        		<!-- <tr ng-repeat="x in visualRecords track by $index" style="cursor: pointer;" ng-click="(x.RequirementDesignator=='M')?dummy():modifySelection(x.Position);"> -->
+				        		<tr ng-repeat="x in visualRecords track by $index" style="cursor: pointer;">
+	        		
+				        			<!-- <tr ng-repeat="x in visualRecords track by $index" style="cursor: pointer;" ng-click="modifySelection(x.Position);"> -->
+				        				<!-- (x.RequirementDesignator=='M')?dummy(): -->
+				        				<td ng-click="modifySelection(x.Position);">
+				        					{{x.Position}}				        						
+				        				</td>
+				        				<td ng-click="modifySelection(x.Position);">
+				        					{{x.ElementID}}
+				        				</td>
+				        				<td ng-click="modifySelection(x.Position);">
+				        					{{x.Description}}
+				        				</td>
+				        				<td ng-click="modifySelection(x.Position);">
+				        					{{x.RequirementDesignator}}
+				        					<!-- <input type="hidden" value="{{(x.RequirementDesignator=='M')?elementUsageSelectionStatus[x.Position]=true:dummy();}}"/> -->		        				
+				        				</td>
+				        				<td ng-click="modifySelection(x.Position);">
+				        					{{x.GroupRequirementDesignatorID}}
+				        				</td>
+				        				<td ng-if="mode==1">
+				        					<input style="width: 100%" ng-disabled="!elementUsageSelectionStatus[x.Position]" ng-change="activateSaveButton()" ng-model="elementUsageValue[x.Position]" placeholder="XXXX" type="text" class="validate">          				
+				        				</td>				        				
+				        				<td ng-if="mode!=1" ng-click="modifySelection(x.Position);">
+				        					{{(totalNumberOfCodesSelected[x.Position]>0)?totalNumberOfCodesSelected[x.Position]:'';}}
+				        				</td>
+				        				<td ng-if="mode!=1">
+				        					<button ng-click="getCode(x);" ng-disabled="!elementUsageSelectionStatus[x.Position]" ng-if="x.Code==true" class="btn waves-effect waves-light">Set Code</button>
+				        					<button ng-click="openCustomCodeModal(x);" ng-disabled="!elementUsageSelectionStatus[x.Position]" ng-if="x.Code==true" class="btn waves-effect waves-light">Custom</button>				        				
+				        				</td>				        				
+				        				<td ng-click="modifySelection(x.Position);">
+				        					<input  ng-click="modifySelection(x.Position);" ng-checked="elementUsageSelectionStatus[x.Position]" type="checkbox" id="test5" />
+      										<label for="test5"></label>
+				        				</td>
+			        			</tr>
+			        		</tbody>
+			        	</table>
+			        </div>
+				</div>
+				<div class="row">
+					<h2 class="col s3 offset-s3">Selected Elements : {{(numberOfSelected>=0)?numberOfSelected:0;}}/{{totalSegments}}</h2>	
+					<!-- <div class="col s3">
+			  			<button ng-click="saveElements();" ng-disabled="numberOfSelected<=0||loading==true||workSavedStatus==true" class="waves-effect waves-light btn-large red lighten-2 start-button"><i class="material-icons right">storage</i>Save Elements</button>			
+					</div> -->
+				</div>
+			    <div class="row">
+	    			<ul class="collection with-header col s8 offset-s1">
+				        <li class="collection-item" ng-repeat="x in elementUsage" ng-if="elementUsageSelectionStatus[x.Position]==true"><div class="collection-text-style"><pre><b>Position</b> : {{x.Position}}  <b>Description</b> : {{x.Description}}  <b>Requirement</b> : {{(x['RequirementDesignator']=='M')?'Mandatory':'Optional';}}<a ng-click="getCode()">{{(totalNumberOfCodesSelected[x.Position]>0)?'(codes:'+totalNumberOfCodesSelected[x.Position]+')':'';}}</a><a ng-click="removeSelectedElement(x.Position);" href="#!" class="secondary-content"><i class="material-icons">clear</i></a></pre></div></li>
+				    </ul>   
+	    		</div>
+
+			    <div class="row">
+			    	<!-- <div class="col s3 offset-s8">
+			  			<button ng-click="next();" ng-disabled="numberOfSelected<=0||loading==true" class="waves-effect waves-light btn-large blue darken-4 start-button"><i class="material-icons right">send</i>Next</button>			
+					</div> -->
+			    </div>
+			</form> 
+			   
+			  
+	</center>
+	</div>
+</div>

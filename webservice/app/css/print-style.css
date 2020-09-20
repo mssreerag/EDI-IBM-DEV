@@ -1,0 +1,65 @@
+#previous-button {
+  display: none;
+}
+.preview-graph-1 {
+  margin-top: 0;
+  width: 500;
+  float: left !important;
+}
+.preview-graph-2 {
+  margin-top: 0;
+  float: left !important;
+}
+div {
+  font-size: 90%;
+}
+.sidebar {
+  display: none;
+}
+table {
+  font-size: 125%;
+}
+.preview-space #transaction-set {
+  font-size: 250%;
+  word-wrap: break-word;
+}
+.btn-floating {
+  display: none;
+}
+.btn {
+  display: none;
+}
+.navbar-fixed {
+  display: none;
+}
+.progress-bar-status {
+  display: none;
+}
+.page-heading {
+  display: none;
+  font-size: 70px ;
+}
+div#content {
+  margin-left: 0px;
+}
+.page-break {
+  display: block;
+  page-break-before: always;
+}
+.preview-space {
+  width: 100% ;
+  margin-left: 0%;
+  border: none;
+}
+body {
+  background: white;
+  font-size: 12pt;
+}
+.preview-space #segment-details {
+  font-size: 90%;
+  width: 25%;
+  word-wrap: break-word;
+  border: solid;
+  border-width: 2;
+  border-color: blue;
+}

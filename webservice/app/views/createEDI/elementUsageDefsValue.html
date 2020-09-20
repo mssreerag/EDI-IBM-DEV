@@ -1,0 +1,139 @@
+<div ng-include="'views/home/header.html'"></div>
+<div class="sidebar z-depth-2 hide-on-med-and-down">
+	<!-- <button id="prev-button" ng-click="prev()" class="waves-effect waves-light btn-large red darken-2 start-button">Previous</button>		 -->
+	<div class="row">
+		<ul class="col s11 table-of-contents">
+			<li><a href='#!'>Agency</a></li>
+			<li><a href='#!'>Version</a></li>
+			<li><a href='#!'>Transaction</a></li>
+			<li><a href='#!'>Segments</a></li>
+			<li><a href='#!' class="active">Elements</a></li>
+			<li><a href='#!' class="not-active">Additional Data</a></li>
+			<li><a href='#!' class="not-active">Document</a></li>
+		</ul>
+	</div>
+	<div class="row">
+	<button id="next-button" ng-click="next();" ng-disabled="nextActivate==false||loading==true||emptySegments==true||(numberOfSelected<1&&numberOfSelected!=-1)" class="waves-effect waves-light btn-large blue darken-4 start-button"><i class="material-icons right">send</i>Next</button>	
+	</div>
+</div>
+<button class="btn-floating btn-large waves-effect waves-light red previous-button z-depth-3" ng-click="prev()"><i class="material-icons">&#xE314;</i></button>
+	<div style="min-height:125%">
+	<center>
+			<form  class="form-start" >
+				 <div class="row">
+					<div class="progress blue lighten-3 progress-bar-status">
+  						<div class="determinate blue darken-4" id="progressBar"></div>
+					</div>
+				</div>
+				<div class="row">
+					<h1 class="col s6 offset-s2">Set Values</h1>        
+			  	</div>
+			  	<div class="row">		  	
+ 				<div class="col s2 offset-s4">
+			  	<div style="display:{{(loading==false)? 'none':'true';}}" class="preloader-wrapper big active">
+			      <div class="spinner-layer spinner-blue">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+
+			      <div class="spinner-layer spinner-red">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+
+			      <div class="spinner-layer spinner-yellow">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+
+			      <div class="spinner-layer spinner-green">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+			    </div>
+				</div>
+				</div>
+				
+			    <div ng-repeat="x in segmentUsagePosition track by $index" ng-init="segPos=$index">			    
+				    <div class="row" ng-if="code[x]==undefined || code[x]==null">
+				    	<div class="row">
+				    		<pre class="left" style="margin-left: 2%; font-size: 150%"><b><u>{{x}} : {{segmentUsage[$index]}}</u></b></pre>
+				    	</div>
+				    	<div class="row">
+					    	<div class="groups-table col s10">
+							<table class="bordered hoverable highlight">
+				        		<thead>
+				          			<tr>
+				          				<th data-field="Position">Position</th>
+				          				<th data-field="ElementID">ElementID</th>
+				          				<th data-field="Description">Description</th>
+				          				<th data-field="Value">Value</th>
+				              		</tr>
+				        		</thead>
+				        			<tr ng-repeat="y in elementUsageDefs[x]">
+				        				<td>{{elementUsage[x][y]['Position']}}</td>
+				        				<td>{{elementUsage[x][y]['ElementID']}}</td>
+				        				<td>{{elementUsage[x][y]['Description']}}</td>
+				        				<td><input ng-model="elementValue[x][y]" placeholder="XXXX" type="text" class="validate"></td>
+				        			</tr>
+				        		<tbody>
+				        			
+				        		</tbody>
+				        	</table>
+				        	</div>
+					    </div>
+				    </div>
+				    <div class="row" ng-if="code[x]!=undefined && code[x]!=null" ng-repeat="z in code[x][code[x]['maxEle']] track by $index" ng-init="codeIndex=$index">
+				    	<div class="row">
+				    		<pre class="left" style="margin-left: 2%; font-size: 150%"><b><u>{{x}} : {{segmentUsage[segPos]}}</u></b></pre>
+				    	</div>
+				    	<div class="row">
+					    	<div class="groups-table col s10">
+							<table class="bordered hoverable highlight">
+				        		<thead>
+				          			<tr>
+				          				<th data-field="Position">Position</th>
+				          				<th data-field="ElementID">ElementID</th>
+				          				<th data-field="Description">Description</th>
+				          				<th data-field="Value">Code/Value</th>
+				              		</tr>
+				        		</thead>
+				        			<tr ng-repeat="y in elementUsageDefs[x]">
+				        				<td>{{elementUsage[x][y]['Position']}}</td>
+				        				<td>{{elementUsage[x][y]['ElementID']}}</td>
+				        				<td>{{elementUsage[x][y]['Description']}}</td>				    					
+				    	    			<td ng-if="code[x][elementUsage[x][y]['Position']]==undefined || code[x][elementUsage[x][y]['Position']]==null || code[x][elementUsage[x][y]['Position']][codeIndex]==undefined || code[x][elementUsage[x][y]['Position']][codeIndex]==null"><input placeholder="XXXX" ng-model="elementValue[x][codeIndex][elementUsage[x][y]['Position']]" type="text" class="validate"></td>
+				    	    			<td ng-if="code[x][elementUsage[x][y]['Position']]!=undefined && code[x][elementUsage[x][y]['Position']]!=null && code[x][elementUsage[x][y]['Position']][codeIndex]!=undefined && code[x][elementUsage[x][y]['Position']][codeIndex]!=null">{{code[x][elementUsage[x][y]['Position']][codeIndex]['value']}} ({{code[x][elementUsage[x][y]['Position']][codeIndex]['description']}})</td>				        
+				        			</tr>
+				        		<tbody>
+				        			
+				        		</tbody>
+				        	</table>
+				        	</div>
+					    </div>
+				    </div>
+			    </div>
+			</form> 			  
+	</center>
+	</div>
+</div>

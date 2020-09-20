@@ -1,0 +1,154 @@
+<div ng-include="'views/home/header.html'"></div>
+<div class="sidebar z-depth-2 hide-on-med-and-down">
+	<!-- <button id="prev-button" ng-click="prev();" class="waves-effect waves-light btn-large red darken-2 start-button">Previous</button>	 -->
+	<div class="row">
+		<ul class="col s11 table-of-contents">
+			<li><a href='#!'>Agency</a></li>
+			<li><a href='#!' class="active">Version</a></li>
+			<li><a href='#!' class="not-active">Transaction</a></li>
+			<li><a href='#!' class="not-active">Segments</a></li>
+			<li><a href='#!' class="not-active">Elements</a></li>
+			<li><a href='#!' class="not-active">Additional Data</a></li>
+			<li><a href='#!' class="not-active">Document</a></li>
+		</ul>
+	</div>
+	<button id="next-button" ng-click="next();" ng-disabled="selectedVersionStatus==false||loading==true" class="waves-effect waves-light btn-large blue darken-4 start-button"><i class="material-icons right">send</i>Next</button>	
+</div>
+<button class="btn-floating btn-large waves-effect waves-light red previous-button z-depth-3" ng-click="prev()"><i class="material-icons">&#xE314;</i></button>
+
+	<div style="min-height:125%">
+	<center>
+			<form  class="form-start" >
+				 <div class="row">
+					<div class="progress blue lighten-3 progress-bar-status">
+  						<div class="determinate blue darken-4" id="progressBar"></div>
+					</div>
+				</div>
+				<div class="row">
+					<h1 class="col s5 offset-s2">Select Version</h1>        
+			  	</div>
+			  	<div class="row">
+		  		<div class="col s2 offset-s3">
+			  	<div style="display:{{(loading==false)? 'none':'true';}}" class="preloader-wrapper big active">
+			      <div class="spinner-layer spinner-blue">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+
+			      <div class="spinner-layer spinner-red">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+
+			      <div class="spinner-layer spinner-yellow">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+
+			      <div class="spinner-layer spinner-green">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+			    </div>
+				</div>
+				<!-- <div class="col s3">
+			  			<button ng-disabled="selectedVersionStatus==false||loading==true" class="waves-effect waves-light btn-large blue darken-4 start-button"><i class="material-icons right">send</i>Next</button>			
+					</div> -->
+				</div>
+
+				<div class="row">
+					
+			  			<!-- <div class="col s1 offset-s4">
+							<p class="form-field-name">Version :</p>
+						</div> -->
+						<div class="input-field col s3 offset-s1">
+					      <!-- <select class="browser-default" ng-model="selectedVersion" ng-change="getTransactionSet()">
+						    <option value="" disabled selected>Version</option>
+						    <option ng-repeat="x in version track by $index" value="{{$index}}">{{x.Version+" : "+x.Description}}</option>
+						  </select> -->
+						  	<i class="material-icons prefix">search</i>
+						    <input placeholder="Search" ng-model="searchRecords" ng-change="search()" type="text" class="validate">
+          					<label class="active" for="first_name">Version</label>
+				  		</div>
+			  		
+					<div class="col s4 offset-s1">
+						<pagination
+		   					page={{presentPage}}
+		    				page-size=5
+		    				total={{totalRecords}}
+		    				dots="...."
+		   					hide-if-empty="true"
+		    				adjacent="1"
+		    				scroll-top="false"
+		    				pagination-action="changePage(page)" />
+						<p>Showing {{presentPage*5-4}} to {{presentPage*5}} of {{totalRecords}} entries</p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="groups-table col s7 offset-s1">
+						<table class="bordered hoverable highlight">
+			        		<thead>
+			          			<tr>
+			          				<th data-field="versionId">Version ID</th>
+			              			<th data-field="versionDescription">Description</th>
+			              		</tr>
+			        		</thead>
+
+			        		<tbody>
+			        			<tr ng-repeat="x in visualRecords track by $index" ng-click="selectVersion($index,x);" style="cursor: pointer;background-color:{{(x.Version==selectedVersion.id)?'#0d47a1':'#FFFFFF';}};color:{{(x.Version==selectedVersion.id)?'#FFFFFF':'#000000';}}">
+				        				<td>
+				        					{{x.Version}}				        						
+				        				</td>
+				        				<td>
+				        				
+				        					{{x.Description}}
+				        				</td>
+			        			</tr>
+			        		</tbody>
+			        	</table>
+			        </div>
+				</div>
+				<div class="row">
+					<h3 class="col s4 offset-s2">Selected Version</h3>	
+				</div>
+				<div class="row">
+			        <div class="input-field col s2 offset-s1">
+			          <input disabled placeholder="Placeholder" ng-model="selectedVersion.id" id="first_name" type="text" class="grey-text text-darken-4 validate">
+			          <label class="Active" for="first_name">Version</label>
+			        </div>
+			        <div class="input-field col s5">
+			          <input disabled placeholder="Placeholder" ng-model="selectedVersion.version" id="first_name" type="text" class="grey-text text-darken-4 validate">
+			          <label class="Active" for="first_name">Description</label>
+			        </div>
+			    </div>
+			    <!-- <div class="row">
+			    	<div class="col s3 offset-s6">
+			  			<button ng-click="next()" ng-disabled="selectedVersionStatus==false||loading==true" class="waves-effect waves-light btn-large blue darken-4 start-button"><i class="material-icons right">send</i>Next</button>			
+					</div>
+			    </div> -->
+			</form> 
+			   
+			  
+	</center>
+	</div>
+</div>

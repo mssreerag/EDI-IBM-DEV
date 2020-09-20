@@ -1,0 +1,427 @@
+<div ng-include="'views/home/header.html'"></div>
+<div style="display: {{(previewMode==0)?'true':'none';}}" class="sidebar z-depth-2 hide-on-med-and-down" id="sidebar">
+	<!-- <button id="prev-button" ng-click="prev()" class="waves-effect waves-light btn-large red darken-2 start-button">Previous</button>				 -->
+	<div class="row">
+		<ul class="col s11 table-of-contents">
+			<li><a href='#!'>Agency</a></li>
+			<li><a href='#!'>Version</a></li>
+			<li><a href='#!'>Transaction</a></li>
+			<li><a href='#!'>Segments</a></li>
+			<li><a href='#!'>Elements</a></li>
+			<li><a href='#!'>Additional Data</a></li>
+			<li><a href='#!' class="active">Document</a></li>
+		</ul>
+	</div>
+	<button id="next-button" ng-click="remoteSave()" ng-disabled="loading==true||remoteSaveStatus==true" class="btn-large waves-effect waves-green blue darken-4"><i class="material-icons right">save</i>save</button>	
+	<button id="next-button-1" ng-click="print()" ng-disabled="loading==true||remoteSaveStatus==false" class="btn-large waves-effect waves-green blue darken-4"><!-- <i class="material-icons right">print</i> -->PDF</button>
+	<!-- <button id="docx-button" ng-click="createDocx()" ng-disabled="loading==true" class="btn-large waves-effect waves-green blue darken-4"><i class="material-icons right">print</i>DOCX</button>	 -->
+</div>
+<button id="previous-button" class="btn-floating btn-large waves-effect waves-light red previous-button z-depth-3" ng-click="prev()"><i class="material-icons">&#xE314;</i></button>
+<div style="min-height:125%">
+	<center>
+			<form  class="form-start" >
+				 <div class="row">
+					<div class="progress blue lighten-3 progress-bar-status">
+  						<div class="determinate blue darken-4" id="progressBar"></div>
+					</div>
+				</div>
+				<div class="page-heading">
+				<div class="row">
+					<h1 class="col s6 offset-s1" ng-class="(previewMode==1)?'offset-s3':'offset-s1'">Preview</h1>        
+			  	</div>
+				<div class="row">
+					<h4 class="col s6 offset-s1" ng-class="(previewMode==1)?'offset-s3':'offset-s1'">Retrieval Status : {{dataRetrievalStatus}}</h4>
+				</div>
+				</div>       
+				<div class="row">
+					<div class="col s2 offset-s3" ng-class="(previewMode==1)?'offset-s5':'offset-s1'">
+					  	<div style="display:{{(loading==false)? 'none':'true';}}" class="preloader-wrapper big active">
+					      <div class="spinner-layer spinner-blue">
+					        <div class="circle-clipper left">
+					          <div class="circle"></div>
+					        </div><div class="gap-patch">
+					          <div class="circle"></div>
+					        </div><div class="circle-clipper right">
+					          <div class="circle"></div>
+					        </div>
+					      </div>
+
+					      <div class="spinner-layer spinner-red">
+					        <div class="circle-clipper left">
+					          <div class="circle"></div>
+					        </div><div class="gap-patch">
+					          <div class="circle"></div>
+					        </div><div class="circle-clipper right">
+					          <div class="circle"></div>
+					        </div>
+					      </div>
+
+					      <div class="spinner-layer spinner-yellow">
+					        <div class="circle-clipper left">
+					          <div class="circle"></div>
+					        </div><div class="gap-patch">
+					          <div class="circle"></div>
+					        </div><div class="circle-clipper right">
+					          <div class="circle"></div>
+					        </div>
+					      </div>
+
+					      <div class="spinner-layer spinner-green">
+					        <div class="circle-clipper left">
+					          <div class="circle"></div>
+					        </div><div class="gap-patch">
+					          <div class="circle"></div>
+					        </div><div class="circle-clipper right">
+					          <div class="circle"></div>
+					        </div>
+					      </div>
+					    </div>
+					</div>
+					<!-- <div class="col s3 offset-s7">
+						<button ng-click="next();"class="waves-effect waves-light btn-large blue darken-4 start-button"><i class="material-icons right">visibility</i>View Preview</button>
+			  		</div> -->
+			  	</div>
+			  	<div class="row" ng-if="previewMode==1">
+			  		<button ng-click="print()" ng-disabled="loading==true" class="btn-large waves-effect waves-green blue darken-4"><i class="material-icons right">&#xE2C4;</i>PDF</button>
+			  	</div>
+			  	<div style="display:{{(loading==true)? 'none':'true';}};margin-left: {{(previewMode==1)?'5%':'-20%';}}" class="preview-space" id="preview-space">
+			  		<div class="row" id="export-this">
+	  					<div class="col s2" id="transaction-set">{{transactionSet.TransactionSet}}<br><c><b>VER.{{version.Version}}</b></c></div>
+	  		  			<div class="col s9" id="transaction-description"><b>{{transactionSet.Description}}</b></div>		  		
+	  		  		</div>
+	  		  		<div class="row">
+	  		  			<div class="col s11 offset-s1">
+	  		  				<p ng-if="headingText!=''">{{headingText}}</p>
+	  		  			</div>
+	  		  		</div>
+	  		  		<div ng-if="numberOfHeadingSegments>0">	  		  		
+	  		  		<div class="row">
+	  		  			<h2 class="col s2"><i><b><u>HEADING</u></b></i></h2>
+	  		  		</div>
+	  		  		<div class="row">
+	  		  			<div class="col s11 offset-s1">
+	  		  				<table class="preview-text-style">
+				        		<thead>
+				          			<tr>
+				          				<th data-field="SegmentPosition">POS</th>			
+				          				<th data-field="SegmentId">ID</th>
+				              			<th data-field="SegmentSection">SegmentName</th>
+				              			<th data-field="SegmentSection">Req</th>
+				              			<th data-field="SegmentSection">Max Use</th>
+				              			<th data-field="SegmentSection">Repeat</th>
+				              			<th data-field="SegmentSection">Notes</th>
+				              		</tr>
+				        		</thead>
+
+				        		<tbody ng-repeat="x in segmentUsage track by $index">
+				        			
+				        			<tr class="preview-loop" ng-if="x.Section=='H'&&x.LoopID!=''&&x.LoopStart==true">
+				        				<td><b><u>Segment Group</u></b></td>
+				        				<td><b><u>{{x.LoopID}}_{{x.SegmentID}}</u></b></td>	
+				        				<td></td>					        					
+				        				<td></td>
+				        				<td></td>
+				        				<td><b><u>{{x.MaximumLoopRepeat}}</u></b></td>	
+				        				<td></td>
+				        			</tr>
+
+				        			<tr ng-if="x.Section=='H'" >
+					        			<td>{{x.Position}}</td>
+				        				<td>{{x.SegmentID}}</td>	
+				        				<td>{{x.Description}}</td>					        					
+				        				<td>{{x.RequirementDesignator}}</td>
+				        				<td>{{x.MaximumUsage}}</td>
+				        				<td></td>					        			
+				       					<td>{{presentLoopID}}</td>
+				        			</tr>
+				        		
+				        		</tbody>
+			        		</table>
+	  		  			</div>
+	  		  		</div> 
+	  		  		</div>
+	  		  		<div ng-if="numberOfDetailSegments>0">
+	  		  		<div class="row">
+	  		  			<h2 class="col s2"><i><b><u>DETAIL:</u></b></i></h2>
+	  		  		</div>
+	  		  		<div class="row">
+	  		  			<div class="col s11 offset-s1">
+	  		  				<table class="preview-text-style">
+				        		<thead>
+				          			<tr>
+				          				<th data-field="SegmentPosition">POS</th>			
+				          				<th data-field="SegmentId">ID</th>
+				              			<th data-field="SegmentSection">SegmentName</th>
+				              			<th data-field="SegmentSection">Req</th>
+				              			<th data-field="SegmentSection">Max Use</th>
+				              			<th data-field="SegmentSection">Repeat</th>
+				              			<th data-field="SegmentSection">Notes</th>
+				              		</tr>
+				        		</thead>
+
+
+				        		<tbody ng-repeat="x in segmentUsage track by $index">
+				        			<tr class="preview-loop" ng-if="x.Section=='D'&&x.LoopID!='' &&x.LoopStart==true">
+				        				<td><b><u>Segment Group</u></b></td>
+				        				<td><b><u>{{x.LoopID}}_{{x.SegmentID}}</u></b></td>	
+				        				<td></td>					        					
+				        				<td></td>
+				        				<td></td>
+				        				<td><b><u>{{x.MaximumLoopRepeat}}</u></b></td>	
+				        				<td></td>
+				        			</tr>
+				        			
+				        			<tr ng-if="x.Section=='D'" >
+					        			<td>{{x.Position}}</td>
+				        				<td>{{x.SegmentID}}</td>	
+				        				<td>{{x.Description}}</td>					        					
+				        				<td>{{x.RequirementDesignator}}</td>
+				        				<td>{{x.MaximumUsage}}</td>
+				        				<td></td>	
+				        				<td></td>
+				        			</tr>
+				        			
+				     
+				        		</tbody>
+				        		</table>
+	  		  			</div>
+	  		  		</div> 
+	  		  		</div>
+	  		  		<div ng-if="numberOfSummarySegments>0">
+	  		  		<div class="row">
+	  		  			<h2 class="col s2"><i><b><u>SUMMARY:</u></b></i></h2>
+	  		  		</div>
+	  		  		<div class="row">
+	  		  			<div class="col s11 offset-s1">
+	  		  				<table class="preview-text-style">
+				        		<thead>
+				          			<tr>
+				          				<th data-field="SegmentPosition">POS</th>			
+				          				<th data-field="SegmentId">ID</th>
+				              			<th data-field="SegmentSection">SegmentName</th>
+				              			<th data-field="SegmentSection">Req</th>
+				              			<th data-field="SegmentSection">Max Use</th>
+				              			<th data-field="SegmentSection">Repeat</th>
+				              			<th data-field="SegmentSection">Notes</th>
+				              		</tr>
+				        		</thead>
+
+				        		
+				        		<tbody ng-repeat="x in segmentUsage track by $index">
+				        			<tr class="preview-loop" ng-if="x.Section=='S'&&x.LoopID!=''&&x.LoopStart==true">
+				        				<td><b><u>Segment Group</u></b></td>
+				        				<td><b><u>{{x.LoopID}}_{{x.SegmentID}}</u></b></td>	
+				        				<td></td>					        					
+				        				<td></td>
+				        				<td></td>
+				        				<td><b><u>{{x.MaximumLoopRepeat}}</u></b></td>	
+				        				<td></td>
+				        			</tr>
+				        			<tr ng-if="x.Section=='S'" >
+					        			<td>{{x.Position}}</td>
+				        				<td>{{x.SegmentID}}</td>	
+				        				<td>{{x.Description}}</td>					        					
+				        				<td>{{x.RequirementDesignator}}</td>
+				        				<td>{{x.MaximumUsage}}</td>
+				        				<td></td>	
+				        				<td></td>
+				        			</tr>
+				        		</tbody>
+			        		</table>
+	  		  			</div>
+	  		  		</div>
+	  		  		</div>
+	  		  		<div ng-if="numberOfNoneSegments>0"> 
+	  		  		<div class="row">
+	  		  			<h2 class="col s2"><i><b><u>NONE</u></b></i></h2>
+	  		  		</div>
+	  		  		<div class="row">
+	  		  			<div class="col s11 offset-s1">
+	  		  				<table class="preview-text-style">
+				        		<thead>
+				          			<tr>
+				          				<th data-field="SegmentPosition">POS</th>			
+				          				<th data-field="SegmentId">ID</th>
+				              			<th data-field="SegmentSection">SegmentName</th>
+				              			<th data-field="SegmentSection">Req</th>
+				              			<th data-field="SegmentSection">Max Use</th>
+				              			<th data-field="SegmentSection">Repeat</th>
+				              			<th data-field="SegmentSection">Notes</th>
+				              		</tr>
+				        		</thead>
+
+				        		
+				        		<tbody ng-repeat="x in segmentUsage track by $index">
+				        			<tr ng-if="x.Section==''&&x.LoopID==''" >
+					        			<td>{{x.Position}}</td>
+				        				<td>{{x.SegmentID}}</td>	
+				        				<td>{{x.Description}}</td>					        					
+				        				<td>{{x.RequirementDesignator}}</td>
+				        				<td>{{x.MaximumUsage}}</td>
+				        				<td></td>	
+				        				<td></td>
+				        			</tr>
+				        			<tr class="preview-loop" ng-if="x.Section==''&&x.LoopID!=''">
+				        				<td><b><u>LOOP ID</u></b></td>
+				        				<td><b><u>{{x.LoopID}}</u></b></td>	
+				        				<td></td>					        					
+				        				<td></td>
+				        				<td></td>
+				        				<td><b><u>{{x.MaximumLoopRepeat}}</u></b></td>	
+				        				<td></td>
+				        			</tr>
+				        			<tr ng-if="x.Section==''&&x.LoopID!=''" >
+					        			<td>{{x.Position}}</td>
+				        				<td>{{x.SegmentID}}</td>	
+				        				<td>{{x.Description}}</td>					        					
+				        				<td>{{x.RequirementDesignator}}</td>
+				        				<td>{{x.MaximumUsage}}</td>
+				        				<td></td>	
+				        				<td></td>
+				        			</tr>
+				        		</tbody>
+			        		</table>
+	  		  			</div>
+	  		  		</div>
+	  		  		</div>
+	  		  		<div ng-if="numberOfFooterSegments>0">
+	  		  		<div class="row">
+	  		  			<h2 class="col s2"><i><b><u>FOOTER</u></b></i></h2>
+	  		  		</div>
+	  		  		<div class="row">
+	  		  			<div class="col s11 offset-s1">
+	  		  				<table class="preview-text-style">
+				        		<thead>
+				          			<tr>
+				          				<th data-field="SegmentPosition">POS</th>			
+				          				<th data-field="SegmentId">ID</th>
+				              			<th data-field="SegmentSection">SegmentName</th>
+				              			<th data-field="SegmentSection">Req</th>
+				              			<th data-field="SegmentSection">Max Use</th>
+				              			<th data-field="SegmentSection">Repeat</th>
+				              			<th data-field="SegmentSection">Notes</th>
+				              		</tr>
+				        		</thead>
+
+				        		
+				        		<tbody ng-repeat="x in segmentUsage track by $index">
+				        			<tr ng-if="x.Section=='F'&&x.LoopID==''" >
+					        			<td>{{x.Position}}</td>
+				        				<td>{{x.SegmentID}}</td>	
+				        				<td>{{x.Description}}</td>					        					
+				        				<td>{{x.RequirementDesignator}}</td>
+				        				<td>{{x.MaximumUsage}}</td>
+				        				<td></td>	
+				        				<td></td>
+				        			</tr>
+				        			<tr class="preview-loop" ng-if="x.Section=='F'&&x.LoopID!=''">
+				        				<td><b><u>LOOP ID</u></b></td>
+				        				<td><b><u>{{x.LoopID}}</u></b></td>	
+				        				<td></td>					        					
+				        				<td></td>
+				        				<td></td>
+				        				<td><b><u>{{x.MaximumLoopRepeat}}</u></b></td>	
+				        				<td></td>
+				        			</tr>
+				        			<tr ng-if="x.Section=='F'&&x.LoopID!=''" >
+					        			<td>{{x.Position}}</td>
+				        				<td>{{x.SegmentID}}</td>	
+				        				<td>{{x.Description}}</td>					        					
+				        				<td>{{x.RequirementDesignator}}</td>
+				        				<td>{{x.MaximumUsage}}</td>
+				        				<td></td>	
+				        				<td></td>
+				        			</tr>
+				        		</tbody>
+			        		</table>
+	  		  			</div>
+	  		  		</div>	  		  		
+	  		  		</div>		  	
+	  		  		<div class="row" style="height: 1%"></div>
+		  		  		<div class="row">
+		  		  			<div class="col s11 offset-s1">
+			  		  			<p class="preview-text-style" ng-if="footerText!=''" ng-bind-html="footerText"></p>
+		  		  			</div>
+		  		  		</div>	  		
+		  		  	<div class="row" style="height: 25%"></div>  		  	  		  			
+	  		  		<div ng-repeat="x in segmentUsage track by $index" class="page-break">
+	  		  			<div class="divider"></div>		  		  			
+	  		  			<div class="row">
+		  		  			<div class="col s2" id="segment-id">{{x['SegmentID']}}</div>
+		  		  			<div class="col s7" id="segment-description"><b>{{x['Description']}}</b></div>
+		  		  			<div class="col s3" id="segment-details">
+		  		  				<pre style="text-align: justify;">POS: {{x['Position']}}          Max: {{x['MaximumUsage']}}<br>   {{(x['Section']=='H')?'Heading':''}}{{(x['Section']=='D')?'Details':''}}{{(x['Section']=='S')?'Summary':''}} - {{(x['RequirementDesignator']=='M')?'Mandatory':'Optional';}}<br>Loop: {{(x['LoopID']=="")?'N/A':x['LoopID']}}    Elements:{{numberOfElementsInSegment[x['Position']]}}</pre>
+		  		  				
+		  		  				<!-- <div class="row">
+		  		  					<div class="col s5" style="text-align: left;"><pre>POS: {{x['Position']}}</pre></div>
+		  		  					<div class="col s6 offset s1" style="text-align: right;"><pre>Max: {{x['MaximumUsage']}}</pre></div>
+		  		  				</div>
+		  		  				<div class="row">
+		  		  					<div class="col s4" style="text-align: center;"><pre>{{(x['Section']=='H')?'Header':''}}{{(x['Section']=='D')?'Details':''}}{{(x['Section']=='S')?'Summary':''}}</pre></div>	  		  					
+		  		  				</div> -->
+		  		  			</div>
+	  		  			</div>
+	  		  			<div class="row">
+		  		  			<h2 class="col s3"><i><b><u>Element Summary</u></b></i></h2>
+		  		  		</div>
+		  		  		<div class="row">
+		  		  			<div class="col s11 offset-s1">
+		  		  				<table class="preview-text-style">
+					        		<thead>
+					          			<tr>
+					          				<th data-field="SegmentPosition">Ref</th>			
+					          				<th data-field="SegmentId">ID</th>
+					              			<th data-field="SegmentSection">SegmentName</th>
+					              			<th data-field="SegmentSection">Req</th>
+					              			<th data-field="SegmentSection">Type</th>
+					              			<th data-field="SegmentSection">Min/Max</th>
+					              			<th data-field="SegmentSection">Notes</th>
+					              		</tr>
+					        		</thead>
+
+					        		<tbody>
+					        			<tr ng-repeat="y in elementUsageDefs[x['Position']] track by $index">
+						        			<!-- <tr><td style="background-color: blue;color:white;">LOOP ID - {{x.LoopID}}</td><td><td>{{x.MaximumLoopRepeat}}</td></td></tr>-->
+					        			 	<td class="element-table-ele">{{y.SegmentID}}{{(y.Position<10)?'0'+y.Position:y.Position}}</td>
+					        				<td class="element-table-ele">{{y.ElementID}}</td>	
+					        				<td class="element-table-ele">
+					        					<b>{{y.Description}}</b>
+					        					<div class="row" ng-if="code[y['SegmentPosition']][y.Position]!=undefined">
+					        						<div class="col s12">
+					        						<table class="preview-text-style">
+					        							<thead>
+					        								<th><u>Code</u></th>
+					        								<th><u>Name</u></th>
+					        							</thead>
+					        							<tbody>
+					        								<tr ng-repeat="z in code[y['SegmentPosition']][y.Position] track by $index" style="height:10%">
+					        									<td style="padding: 5px 5px">{{z.value}}</td>
+					        									<td style="padding: 5px 5px">{{z.description}}</td>
+					        								</tr>
+					        							</tbody>
+					        						</table>
+					        						</div>
+					        					</div>
+					        				</td>					        					
+					        				<td class="element-table-ele">{{y.RequirementDesignator}}</td>
+					        				<td class="element-table-ele">{{y.Type}}</td>
+					        				<td class="element-table-ele">{{y.MinimumLength}}/{{y.MaximumLength}}</td>	
+					        				<td class="element-table-ele"></td>
+					        			</tr>
+					        		</tbody>
+				        		</table> 
+		  		  			</div>
+		  		  		</div>
+
+		  		  		<div class="row" style="height: 1%"></div>
+		  		  		<div class="row">
+		  		  			<div class="col s11 offset-s1">
+			  		  			<p class="preview-text-style" ng-if="segmentText[x['Position']]!=''" id="{{'segmentText'+x['Position']}}" ng-bind-html="segmentText[x['Position']]"></p>
+		  		  			</div>
+		  		  		</div>
+		  		  		<div class="row" style="height: 25%"></div>
+	  		  		</div>   		  		
+			</form> 			  
+	</center>
+	</div>
+</div>

@@ -1,0 +1,30 @@
+<section>
+	<div ng-controller="HeaderCtrl" class="navbar-fixed">
+		
+		<!-- <div id="dropdown1" class="dropdown-content my-dropdown">
+		  <div class="row">
+		  	<button class="col s12 btn-flat waves-effect waves-light" ng-click="logout();">logout</button>
+		  </div>
+		</div> -->
+
+		<ul id="dropdown1" class="dropdown-content my-dropdown">			
+			<li class="my-list blue-text text-darken-4">{{ (ediMode==0)?'Edi Spec':'Edi File'; }}</li>
+			<li class="my-list"><a class="black-text black-darken-4" href="/home"><!-- <i class="tiny material-icons left">home</i> -->home</a></li>
+			<li class="my-list" ng-show="ediPage"><a class="black-text black-darken-4" ng-click="saveAsDraft()">save and exit</a></li>			
+			<li class="my-list" ng-show="ediPage"><a class="black-text black-darken-4" ng-click="switch()">Switch to {{ (ediMode==0)?'Edi File':'Edi Spec'; }}</a></li>					
+			<li class="my-list" ng-show="ediPage"><a class="red-text text-darken-4" href="/home">cancel</a></li>
+			<li class="divider"></li>
+		  	<li class="my-list" ng-click="logout();">logout</li>
+		</ul>
+
+		<nav class="grey darken-4">
+			<div class="nav-wrapper">
+				<a ng-href="/home" style="margin-left: 20px" class="brand-logo"><img src="images/logo-ibm.png" style="width:65px;height:21px;"> EDI - Guide Creator <sup>&alpha;</sup></a>				
+				<ul class="right hide-on-med-and-down" style="display: {{(optionsActivate==false)?'none':'';}};">
+					<li><a class="dropdown-button" href="#!" data-activates="dropdown1"><i class="material-icons">more_vert</i></a></li> 
+				</ul>
+				<pre ng-if="name!=''" class="right hide-on-med-and-down" style="margin-top:0%; text-align: right; position: fixed;margin-left: 50%; min-width: 45%;color: #757575; cursor: default;">Hello, {{name}}</pre>
+			</div>
+		</nav>
+	</div>
+</section>

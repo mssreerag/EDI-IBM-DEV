@@ -1,0 +1,121 @@
+<div ng-include="'views/home/header.html'"></div>
+<div class="sidebar z-depth-2 hide-on-med-and-down">
+	<!-- <button id="prev-button" ng-click="prev()" class="waves-effect waves-light btn-large red darken-2 start-button">Previous</button>		 -->
+	<div class="row">
+		<ul class="col s11 table-of-contents">
+			<li><a href='#!'>Agency</a></li>
+			<li><a href='#!'>Version</a></li>
+			<li><a href='#!'>Transaction</a></li>
+			<li><a href='#!'>Segments</a></li>
+			<li><a href='#!'>Elements</a></li>
+			<li><a href='#!' class="active">Additional Data</a></li>
+			<li><a href='#!' class="not-active">Document</a></li>
+		</ul>
+	</div>
+	<button id="next-button" ng-click="next();" ng-disabled="businessPartnerText==''||elementDelimiter==''||subElementDelimiter==''||segmentDelimiter==''" class="waves-effect waves-light btn-large blue darken-4 start-button"><i class="material-icons right">send</i>Next</button>	
+</div>
+<button class="btn-floating btn-large waves-effect waves-light red previous-button z-depth-3" ng-click="prev()"><i class="material-icons">&#xE314;</i></button>
+	<div style="min-height:125%">
+	<center>
+			<form  class="form-start" style="min-height: 150%">
+				 <div class="row">
+					<div class="progress blue lighten-3 progress-bar-status">
+  						<div class="determinate blue darken-4" id="progressBar"></div>
+					</div>
+				</div>
+				<div class="row">
+					<h1 class="col s6 offset-s1">Set Delimiters</h1><br>        
+			  	</div>        
+			  	<div class="row">
+		  		<div class="col s2 offset-s3">
+			  	<div style="display:{{(loading==false)? 'none':'true';}}" class="preloader-wrapper big active">
+			      <div class="spinner-layer spinner-blue">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+
+			      <div class="spinner-layer spinner-red">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+
+			      <div class="spinner-layer spinner-yellow">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+
+			      <div class="spinner-layer spinner-green">
+			        <div class="circle-clipper left">
+			          <div class="circle"></div>
+			        </div><div class="gap-patch">
+			          <div class="circle"></div>
+			        </div><div class="circle-clipper right">
+			          <div class="circle"></div>
+			        </div>
+			      </div>
+			    </div>
+				</div>
+				<!-- <div class="col s3">
+			  			<button ng-disabled="selectedVersionStatus==false||loading==true" class="waves-effect waves-light btn-large blue darken-4 start-button"><i class="material-icons right">send</i>Next</button>			
+					</div> -->
+				</div>
+				<div class="row">
+					<div class="col s4 offset s2">
+						<h2>Business Partner Name(required)</h2>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col s3">
+			  			<button class="waves-effect waves-light btn blue darken-4" ng-disabled="businessPartnerEdit==true;" ng-click="enableBusinessPartnerEdit()"><i class="material-icons right">edit</i>Enable Edit</button>	
+			  		</div>
+				</div>
+				<div class="row">
+				  	<div class="input-field col s9">
+			          <i class="material-icons prefix">mode_edit</i>
+			          	<input placeholder="Name" id="business-partner-text-area" ng-model="businessPartnerText" ng-disabled="businessPartnerEdit==false" type="text" class="validate">
+          				<label for="first_name" class="active">Business Partner Name</label>
+			        </div>
+				</div>
+				<div class="row">
+					<div class="col s4 offset s2">
+						<h2>Delimiters</h2>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col s3">
+			  			<button class="waves-effect waves-light btn blue darken-4" ng-disabled="delimiterEdit==true;" ng-click="enableDelimiterEdit()"><i class="material-icons right">edit</i>Enable Edit</button>	
+			  		</div>
+				</div>
+				<div class="row">
+				  	<div class="input-field col s1 offset-s1">
+			          	<input placeholder="Delimiter" id="business-partner-text-area" ng-model="elementDelimiter" ng-disabled="delimiterEdit==false" type="text" class="validate" maxlength="1" style="font-weight: bold;">
+          				<label for="first_name" class="active">Element Delimiter</label>
+			        </div>
+			        <div class="input-field col s1 offset-s1">
+			          	<input placeholder="Delimiter" id="business-partner-text-area" ng-model="subElementDelimiter" ng-disabled="delimiterEdit==false" type="text" class="validate" maxlength="1" style="font-weight: bold;">
+          				<label for="first_name" class="active">Sub Element Delimiter</label>
+			        </div>
+			        <div class="input-field col s1 offset-s1">
+			          	<input placeholder="Delimiter" id="business-partner-text-area" ng-model="segmentDelimiter" ng-disabled="delimiterEdit==false" type="text" class="validate" maxlength="1" style="font-weight: bold;">
+          				<label for="first_name" class="active">Segment Delimiter</label>
+			        </div>
+				</div>
+			</form> 			  
+	</center>
+	</div>
+</div>

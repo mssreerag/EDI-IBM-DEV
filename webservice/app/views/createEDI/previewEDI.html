@@ -1,0 +1,97 @@
+<div ng-include="'views/home/header.html'"></div>
+<div style="display: {{(previewMode==0)?'true':'none';}}" class="sidebar z-depth-2 hide-on-med-and-down" id="sidebar">
+	<!-- <button id="prev-button" ng-click="prev()" class="waves-effect waves-light btn-large red darken-2 start-button">Previous</button>				 -->
+	<div class="row">
+		<ul class="col s11 table-of-contents">
+			<li><a href='#!'>Agency</a></li>
+			<li><a href='#!'>Version</a></li>
+			<li><a href='#!'>Transaction</a></li>
+			<li><a href='#!'>Segments</a></li>
+			<li><a href='#!'>Elements</a></li>
+			<li><a href='#!'>Additional Data</a></li>
+			<li><a href='#!' class="active">Document</a></li>
+		</ul>
+	</div>
+<!-- 	<button id="next-button" ng-click="remoteSave()" ng-disabled="loading==true||remoteSaveStatus==true" class="btn-large waves-effect waves-green blue darken-4"><i class="material-icons right">save</i>save</button>	
+	<button id="next-button-1" ng-click="print()" ng-disabled="loading==true||remoteSaveStatus==false" class="btn-large waves-effect waves-green blue darken-4">PDF</button>
+ -->	<!-- <button id="docx-button" ng-click="createDocx()" ng-disabled="loading==true" class="btn-large waves-effect waves-green blue darken-4"><i class="material-icons right">print</i>DOCX</button>	 -->
+
+ 	<button id="next-button" ng-click="remoteSave()" ng-disabled="loading==true||remoteSaveStatus==true" class="btn-large waves-effect waves-green blue darken-4"><i class="material-icons right">save</i>save</button>		
+ 	<button id="next-button-1" ng-click="saveEdi()" ng-disabled="loading==true||remoteSaveStatus==false" class="btn-large waves-effect waves-green blue darken-4">TXT</button>
+</div>
+<button id="previous-button" class="btn-floating btn-large waves-effect waves-light red previous-button z-depth-3" ng-click="prev()"><i class="material-icons">&#xE314;</i></button>
+<div style="min-height:125%">
+	<center>
+			<form  class="form-start" >
+				 <div class="row">
+					<div class="progress blue lighten-3 progress-bar-status">
+  						<div class="determinate blue darken-4" id="progressBar"></div>
+					</div>
+				</div>
+				<div class="page-heading">
+				<div class="row">
+					<h1 class="col s6 offset-s1" ng-class="(previewMode==1)?'offset-s3':'offset-s1'">Preview</h1>        
+			  	</div>
+				<div class="row">
+					<h4 class="col s6 offset-s1" ng-class="(previewMode==1)?'offset-s3':'offset-s1'">Retrieval Status : {{dataRetrievalStatus}}</h4>
+				</div>
+				</div>       
+				<div class="row">
+					<div class="col s2 offset-s3" ng-class="(previewMode==1)?'offset-s5':'offset-s1'">
+					  	<div style="display:{{(loading==false)? 'none':'true';}}" class="preloader-wrapper big active">
+					      <div class="spinner-layer spinner-blue">
+					        <div class="circle-clipper left">
+					          <div class="circle"></div>
+					        </div><div class="gap-patch">
+					          <div class="circle"></div>
+					        </div><div class="circle-clipper right">
+					          <div class="circle"></div>
+					        </div>
+					      </div>
+
+					      <div class="spinner-layer spinner-red">
+					        <div class="circle-clipper left">
+					          <div class="circle"></div>
+					        </div><div class="gap-patch">
+					          <div class="circle"></div>
+					        </div><div class="circle-clipper right">
+					          <div class="circle"></div>
+					        </div>
+					      </div>
+
+					      <div class="spinner-layer spinner-yellow">
+					        <div class="circle-clipper left">
+					          <div class="circle"></div>
+					        </div><div class="gap-patch">
+					          <div class="circle"></div>
+					        </div><div class="circle-clipper right">
+					          <div class="circle"></div>
+					        </div>
+					      </div>
+
+					      <div class="spinner-layer spinner-green">
+					        <div class="circle-clipper left">
+					          <div class="circle"></div>
+					        </div><div class="gap-patch">
+					          <div class="circle"></div>
+					        </div><div class="circle-clipper right">
+					          <div class="circle"></div>
+					        </div>
+					      </div>
+					    </div>
+					</div>
+					<!-- <div class="col s3 offset-s7">
+						<button ng-click="next();"class="waves-effect waves-light btn-large blue darken-4 start-button"><i class="material-icons right">visibility</i>View Preview</button>
+			  		</div> -->
+			  	</div>			  	
+			  	<div class="row" ng-if="previewMode==1">
+			  		<button ng-click="saveEdi()" ng-disabled="loading==true" class="btn-large waves-effect waves-green blue darken-4">TXT</button>
+			  	</div>
+			  	<div style="display:{{(loading==true)? 'none':'true';}};margin-left: {{(previewMode==1)?'5%':'-20%';}}" class="preview-space" id="preview-space">
+			  		<pre ng-bind="display" style="text-align: left;margin-left: 2%"></pre>	  		  		
+		  		  	<div class="row" style="height: 25%"></div>
+	  		  	</div>   		  		
+			</form> 			  
+	</center>
+	</div>
+</div>
