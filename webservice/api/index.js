@@ -1,6 +1,5 @@
 'use strict';
 
-//Required include
 var database = require('../config/database');
 // var ldapConfig = require('../config/ldap');
 var genRes = require('./controllers/genres.js');
@@ -26,6 +25,9 @@ var cloudantTransactionSet = require('./onlinecontrollers/TransactionSet');
 var cloudantSegmentUsage = require('./onlinecontrollers/SegmentUsage');
 var cloudantElementUsage = require('./onlinecontrollers/ElementUsageDefs');
 var cloudantCode = require('./onlinecontrollers/code');
+var cloudantEdiLog = require('./onlinecontrollers/EdiLog');
+var cloudantSegmentDescription= require('./onlinecontrollers/SegmentDescription')
+
 
 //Required include
 var _ = require('underscore');
@@ -39,7 +41,9 @@ var cc = require('coupon-code');
 var pdfkit = require('pdfkit');
 // var ldap = require('ldapjs');
 var handlebars = require('handlebars');
-const { query } = require('express');
+const {
+	query
+} = require('express');
 var ldapClient;
 
 //var doc = new jsPDF("portrait","px","a4");
@@ -343,9 +347,12 @@ exports.clearSession = function (req, res) {
 exports.getAgency = function (req, res) {
 	var params = req.body;
 	var query = {
-		Agency: params.agency
+		"selector": {
+
+			"Agency": params.agency
+		}
 	};
-	agency.get(query, function (msg, data) {
+	cloudantAgency.get(query, function (msg, data) {
 		var obj = JSON.parse(msg);
 		obj.data = data;
 		res.send(JSON.stringify(obj));
@@ -377,11 +384,12 @@ exports.getVersion = function (req, res) {
 	var query = {
 		// Agency : params.agency ,
 		// Version : params.version
+		"selector": {
 
 
 			"Agency": params.agency,
 			"Version": params.version
-
+		}
 	};
 	version.get(query, function (msg, data) {
 		var obj = JSON.parse(msg);
@@ -392,9 +400,8 @@ exports.getVersion = function (req, res) {
 
 exports.getAllVersion = function (req, res) {
 	var params = req.body;
+	console.log("params", req.body);
 	var query = {
-		// Agency : params.agency ,
-		// Version : params.version
 		"selector": {
 			"Agency": params.agency
 		}
@@ -411,9 +418,11 @@ exports.getAllVersion = function (req, res) {
 exports.getTransactionSet = function (req, res) {
 	var params = req.body;
 	var query = {
-		"Agency": params.agency,
-		"Version": params.version,
-		"TransactionSet": params.transactionSet
+		"selector": {
+			"Agency": params.agency,
+			"Version": params.version,
+			"TransactionSet": params.transactionSet
+		}
 	};
 	transactionSet.get(query, function (msg, data) {
 		var obj = JSON.parse(msg);
@@ -450,7 +459,7 @@ exports.getSegmentDescription = function (req, res) {
 		var obj = JSON.parse(msg);
 		obj.data = data;
 		res.send(JSON.stringify(obj));
-	console.log("JSON Description");
+		console.log("JSON Description");
 	});
 }
 
@@ -460,25 +469,32 @@ exports.getSegmentUsage = function (req, res) {
 	var params = req.body;
 	var obj = {};
 	var query = {
+		"selector": {
+
 		"Agency": params.agency,
 		"Version": params.version,
 		"TransactionSetID": params.transactionSet,
 		"SegmentID": params.segment
+		}
 	};
-	segmentUsage.get(query, function (msg, data) {
+	cloudantSegmentUsage.get(query, function (msg, data) {
 		obj = JSON.parse(msg);
 		obj.data = data;
 		if (data != undefined && data.length > 0) {
 			query = {
+		"selector": {
+
 				"AGENCY": params.agency,
 				"Version": params.version,
 				"SegmentID": params.segment
+		}
 			};
-			segmentDescription.get(query, function (msg, data) {
+			cloudantSegmentDescription.get(query, function (msg, data) {
 				msg = JSON.parse(msg);
 				obj.status = msg.status;
 				obj.message = msg.message;
-				obj.description = data[0]['Description'];
+				if(data!=null)
+					obj.description = data[0]['Description'];
 				res.send(JSON.stringify(obj));
 			});
 		} else {
@@ -491,18 +507,19 @@ exports.getSegmentUsage = function (req, res) {
 exports.getSegmentUsageFromPosition = function (req, res) {
 	var params = req.body;
 	var query = {
-		"selector":{
-		"Agency": params.agency,
-		"Version": params.version,
-		"TransactionSetID": params.transactionSet,
-		"Position": params.segment}
+		"selector": {
+			"Agency": params.agency,
+			"Version": params.version,
+			"TransactionSetID": params.transactionSet,
+			"Position": params.segment
+		}
 	};
 	console.log(query);
 	console.log(req.body);
 	cloudantSegmentUsage.get(query, function (msg, data) {
 		var obj = JSON.parse(msg);
 		obj.data = data;
-		console.log("segment data",obj);
+		console.log("segment data", obj);
 		//res.send(JSON.stringify(obj));
 		if (data && data.length > 0) {
 			query = {
@@ -512,17 +529,17 @@ exports.getSegmentUsageFromPosition = function (req, res) {
 
 			};
 
-			console.log("query for description: ",query);
+			console.log("query for description: ", query);
 			segmentDescription.get(query, function (msg, data) {
 				console.log(msg);
 				console.log(data, "message");
 				msg = JSON.parse(msg);
 				obj.status = msg.status;
 				obj.message = msg.message;
-				if(data==null)
-					obj.description=null;
+				if (data == null)
+					obj.description = null;
 				else
-				obj.description=data[0]['Description'];
+					obj.description = data[0]['Description'];
 
 				res.send(JSON.stringify(obj));
 			});
@@ -609,10 +626,11 @@ exports.getElementUsageDefsFromPosition = function (req, res) {
 exports.getElementUsageDefsWithCode = function (req, res) {
 	var params = req.body;
 	var query = {
-		"selector":{
-		"Agency": params.agency,
-		"Version": params.version,
-		"SegmentID": params.segmentId}
+		"selector": {
+			"Agency": params.agency,
+			"Version": params.version,
+			"SegmentID": params.segmentId
+		}
 	};
 	console.log(query);
 	cloudantElementUsage.get(query, function (msg, data) {
@@ -620,6 +638,7 @@ exports.getElementUsageDefsWithCode = function (req, res) {
 
 		var obj = JSON.parse(msg);
 		obj.data = data;
+
 		// console.log(data);
 		// try{
 		numberOfElements = data.length;
@@ -627,11 +646,63 @@ exports.getElementUsageDefsWithCode = function (req, res) {
 		// catch{
 		// 	numberOfElements=0
 		// }
+
 		if (numberOfElements == 0) {
 			res.send(obj);
 		} else {
+			// getCodeWithElement(obj, res);
 			numberOfElementsRetrieved = 0;
-			getCodeWithElement(obj, res);
+			var codeQuery = {
+				"selector": {
+
+				}
+			}
+			var queryArray = []
+			for (var k = 0; k < data.length; k++) {
+				console.log(data[k]["Agency"])
+
+				var indivQuery = {
+					"Agency": data[k]['Agency'],
+					"Version": data[k]['Version'],
+					"ElementID": data[k]['ElementID']
+				}
+				queryArray.push(indivQuery);
+
+
+			}
+			codeQuery["selector"]["$or"] = queryArray;
+			console.log("queryarray", JSON.stringify(codeQuery));
+
+			cloudantCode.get(codeQuery, (message, datum) => {
+				if (datum == null) {
+					console.log(datum);
+					console.log("null return code -elem combo");
+					res.send(JSON.stringify(obj));
+				} else {
+					// var result = JSON.parse(message);
+					// result.datum = datum;
+					// console.log("datum",datum);
+					console.log("obj len", datum.length);
+					console.log("obj len", datum);
+
+					for (var j = 0; j < obj.data.length; j++) {
+						var flag = false;
+						for (var i = 0; i < datum.length; i++) {
+							if (obj.data[j]["ElementID"] == datum[i]["ElementID"]) {
+								flag = true;
+								console.log("flagged", obj.data[j]["ElementID"]);
+								obj.data[j]["Code"] = flag
+								break;
+							}
+							obj.data[j]["Code"] = flag
+
+						}
+					}
+					console.log("not null return code -elem combo", obj);
+					res.send(JSON.stringify(obj));
+				}
+
+			});
 		}
 	});
 }
@@ -641,20 +712,22 @@ exports.getElementUsageDefsWithCode = function (req, res) {
 exports.getCode = function (req, res) {
 	var params = req.body;
 	var query = {
+		"selector": {
 			"Agency": params.agency,
 			"Version": params.version,
 			"ElementID": params.element
+		}
 	};
 
-	code.get(query, function (msg, data) {
+	cloudantCode.get(query, function (msg, data) {
 		var obj = JSON.parse(msg);
 		obj.data = data;
 		res.send(JSON.stringify(obj));
 	});
 }
 
-function getCodeFromElem(obj,res) {
-	var params=obj.data;
+function getCodeFromElem(obj, res) {
+	var params = obj.data;
 	var indivQuery;
 	var query = {
 		"selector": {
@@ -663,11 +736,10 @@ function getCodeFromElem(obj,res) {
 			]
 		}
 	}
-	var queryArray=[]
+	var queryArray = []
 	params.forEach(i => {
 		console.log(i["Agency"])
-	 {
-		indivQuery={
+		indivQuery = {
 			"Agency": i['Agency'],
 			"Version": i['Version'],
 			"ElementID": i['ElementID']
@@ -675,59 +747,58 @@ function getCodeFromElem(obj,res) {
 		queryArray.push(indivQuery);
 
 
-	}});
-	console.log("queryarray",queryArray);
-	query["selector"]["$or"]=queryArray;
-	query=JSON.stringify(query)
-	console.log("query for codes-elem",query);
-	
-	cloudantCode.get(query, (msg, data)=> {
-		if(data==null){
+
+	});
+	console.log("queryarray", queryArray);
+	query["selector"]["$or"] = queryArray;
+	query = JSON.stringify(query)
+	console.log("query for codes-elem", query);
+
+	cloudantCode.get(query, (msg, data) => {
+		if (data == null) {
 			console.log(data);
 			console.log("null return code -elem combo");
 			res.send(JSON.stringify(obj));
-		}
-		else{
-		var result = JSON.parse(msg);
-		result.data = data;
-		for(var j=0;j<params.length;j++){
-			var flag=false;
-			for(var i =0;i<data.length;i++){
-				if (obj.data[j]["ElementID"]==data[i]["ElementID"]) {
-					flag=true;
-					break;
+		} else {
+			var result = JSON.parse(msg);
+			result.data = data;
+			for (var j = 0; j < params.length; j++) {
+				var flag = false;
+				for (var i = 0; i < data.length; i++) {
+					if (obj.data[j]["ElementID"] == data[i]["ElementID"]) {
+						flag = true;
+						break;
+					}
+					obj.data[j]["Code"] = flag
 				}
-				obj.data[j]["Code"]=flag
 			}
+			console.log("not null return code -elem combo", obj);
+			res.send(JSON.stringify(obj));
 		}
-		console.log("not null return code -elem combo",obj);
-		res.send(JSON.stringify(obj));
-	}
 	});
 }
-function getCodeWithElement(obj,res){
+
+function getCodeWithElement(obj, res) {
 	// console.log(numberOfElementsRetrieved+"/"+numberOfElements);
-	if(numberOfElementsRetrieved<numberOfElements)
-	{
-		obj.data[numberOfElementsRetrieved]['Code']="";
-		var params=obj.data[numberOfElementsRetrieved];
-		var query={
-			"Agency" : params['Agency'],
-			"Version" : params['Version'],		
-			"ElementID" : params['ElementID']
+	if (numberOfElementsRetrieved < numberOfElements) {
+		obj.data[numberOfElementsRetrieved]['Code'] = "";
+		var params = obj.data[numberOfElementsRetrieved];
+		var query = {
+			"Agency": params['Agency'],
+			"Version": params['Version'],
+			"ElementID": params['ElementID']
 		};
 
-		code.getOne(query,function(msg,data){
-			obj.data[numberOfElementsRetrieved]['Code']=JSON.parse(msg)['status'];					
+		code.getOne(query, function (msg, data) {
+			obj.data[numberOfElementsRetrieved]['Code'] = JSON.parse(msg)['status'];
 			//console.log(msg["message"]);
 			// console.log(obj.data[numberOfElementsRetrieved]['Code']);
 			// obj.data[numberOfElementsRetrieved]['code']=msg.status;
 			numberOfElementsRetrieved++;
-			getCodeWithElement(obj,res);
-		});		
-	}
-	else
-	{	console.log(obj)
+			getCodeWithElement(obj, res);
+		});
+	} else {
+		console.log(obj)
 		res.send(obj);
 		// res.send(JSON.stringify(obj.data.Code));
 	}
@@ -778,26 +849,9 @@ function getCodeWithElement2(obj, res) {
 //Api for pdf generation
 
 exports.getPdf = function (req, res) {
-	var params = { "version": "007020",
-	"transactionSet": "101",
-	"transactionDescription": "NAME AND ADDRESS LISTS",
-	"transactionFunctionalGroup": "NL",
-	"headingText": "asd",
-	"footerText": "asd",
-	"businessPartnerText": "asda",
-	"numberOfHeadingSegments": "4",
-	"numberOfDetailSegments": "0",
-	"numberOfSummarySegments": "0",
-	"segmentUsage":
-	 {"1":{"_id":"5f38b8a8361209d734d0fcd7","Agency":"X","Version":"007020","TransactionSetID":"101","Release":"0","Position":"1","SegmentID":"BGN","Section":"H","RequirementDesignator":"M","LoopID":"","BeginEnd":"","RequiredFirstSegment":"","MaximumLoopRepeat":"0","MaximumUsage":"1","LoopStart":false},"2":{"_id":"5f38b8a8361209d734d0fcd8","Agency":"X","Version":"007020","TransactionSetID":"101","Release":"0","Position":"2","SegmentID":"DTM","Section":"H","RequirementDesignator":"M","LoopID":"1000","BeginEnd":"B","RequiredFirstSegment":"Y","MaximumLoopRepeat":"999999","MaximumUsage":"1","LoopStart":true},"3":{"_id":"5f38b8a8361209d734d0fcd9","Agency":"X","Version":"007020","TransactionSetID":"101","Release":"0","Position":"3","SegmentID":"N1","Section":"H","RequirementDesignator":"M","LoopID":"1000","BeginEnd":"","RequiredFirstSegment":"","MaximumLoopRepeat":"0","MaximumUsage":"999999","LoopStart":false},"5":{"_id":"5f38b8a8361209d734d0fcdb","Agency":"X","Version":"007020","TransactionSetID":"101","Release":"0","Position":"5","SegmentID":"LX","Section":"H","RequirementDesignator":"M","LoopID":"1110","BeginEnd":"B","RequiredFirstSegment":"Y","MaximumLoopRepeat":"999999","MaximumUsage":"1","LoopStart":true}},
-	"numberOfElementsInSegment": {"1":"3","2":"1","3":"2","5":"1"},
-	"elementUsageDefs":
-	 {"1":{"1":{"_id":"404dd1236a2b702604346287cd1f2249","_rev":"1-745dd20bce7576258ad57e20f41eaf66","Agency":"X","Version":"007020","SegmentID":"BGN","ElementID":"0353","Release":"0","Position":"1","RequirementDesignator":"M","Rules":"","GroupRequirementDesignatorID":"","SubElementReqDesignator":"M","GroupReqDesignator":"","GroupBeginEnd":"","Type":"ID","Description":"TRANSACTION SET PURPOSE CODE","MinimumLength":"2","MaximumLength":"2","CodeParts":"0","CompositeElement":"0","RepeatFactor":"1","SegmentPosition":"1"},"2":{"_id":"404dd1236a2b702604346287cd1f2337","_rev":"1-c72e2e0778b4075588216108c1e158f8","Agency":"X","Version":"007020","SegmentID":"BGN","ElementID":"0127","Release":"0","Position":"2","RequirementDesignator":"M","Rules":"","GroupRequirementDesignatorID":"","SubElementReqDesignator":"M","GroupReqDesignator":"","GroupBeginEnd":"","Type":"AN","Description":"REFERENCE IDENTIFICATION","MinimumLength":"1","MaximumLength":"80","CodeParts":"0","CompositeElement":"0","RepeatFactor":"1","SegmentPosition":"1"},"3":{"_id":"404dd1236a2b702604346287cd1f2c45","_rev":"1-d93821379256c4a471ea8af5eb0eda43","Agency":"X","Version":"007020","SegmentID":"BGN","ElementID":"0373","Release":"0","Position":"3","RequirementDesignator":"M","Rules":"","GroupRequirementDesignatorID":"","SubElementReqDesignator":"M","GroupReqDesignator":"","GroupBeginEnd":"","Type":"DT","Description":"DATE","MinimumLength":"8","MaximumLength":"8","CodeParts":"0","CompositeElement":"0","RepeatFactor":"1","SegmentPosition":"1"}},"2":{"1":{"_id":"404dd1236a2b702604346287cd4e7672","_rev":"1-00ee47e0fed6023fa6e88e3ed033e57a","Agency":"X","Version":"007020","SegmentID":"DTM","ElementID":"0374","Release":"0","Position":"1","RequirementDesignator":"M","Rules":"","GroupRequirementDesignatorID":"","SubElementReqDesignator":"M","GroupReqDesignator":"","GroupBeginEnd":"","Type":"ID","Description":"DATE/TIME QUALIFIER","MinimumLength":"3","MaximumLength":"3","CodeParts":"0","CompositeElement":"0","RepeatFactor":"1","SegmentPosition":"2"}},"3":{"1":{"_id":"404dd1236a2b702604346287cdb6d3d5","_rev":"1-23995d90b63e8f47930d50aef07a3764","Agency":"X","Version":"007020","SegmentID":"N1","ElementID":"0098","Release":"0","Position":"1","RequirementDesignator":"M","Rules":"","GroupRequirementDesignatorID":"","SubElementReqDesignator":"M","GroupReqDesignator":"","GroupBeginEnd":"","Type":"ID","Description":"ENTITY IDENTIFIER CODE","MinimumLength":"2","MaximumLength":"3","CodeParts":"0","CompositeElement":"0","RepeatFactor":"1","SegmentPosition":"3"}},"5":{"1":{"_id":"404dd1236a2b702604346287cdad3b05","_rev":"1-9f2e733f93dd6ee1f64ad55549978019","Agency":"X","Version":"007020","SegmentID":"LX","ElementID":"0554","Release":"0","Position":"1","RequirementDesignator":"M","Rules":"","GroupRequirementDesignatorID":"","SubElementReqDesignator":"M","GroupReqDesignator":"","GroupBeginEnd":"","Type":"N0","Description":"ASSIGNED NUMBER","MinimumLength":"1","MaximumLength":"6","CodeParts":"0","CompositeElement":"0","RepeatFactor":"1","SegmentPosition":"5"}}},
-	"segmentText": {"1":"pos1","2":"pos2","3":"pos3","5":"pos5"},
-	"code":
-	 {"3":{"1":{"0":{"value":"005","description":"CONSTRUCTION CONTRACTOR"}}}} };
+	var params = req.body
 
-	console.log("pdfparams",params);
+	console.log("pdfparams", params);
 	console.log("params end");
 	var fs = require('fs');
 	var filePath = '';
@@ -1567,30 +1621,28 @@ exports.getPdf = function (req, res) {
 
 exports.logEdiGuideCreation = function (req, res) {
 	var log = req.body;
-
 	log['Username'] = req.session.user;
 	log['Timestamp'] = Date.now();
-
-	console.log(log);
-
-	ediLog.create(log, function (str) {
-		console.log(str);
-		res.send(str);
+	cloudantEdiLog.push(JSON.stringify(log), function (success, msg) {
+		if (success) {
+			console.log(msg);
+		} else {
+			console.log(msg);
+		}
 	});
 }
 
 exports.getLatestVersion = function (req, res) {
-
 	var params = req.body;
-
 	console.log(params);
-
 	var query = {
 		"Agency": params.agency,
 		"Version": params.version,
 		"TransactionSet": params.transactionSet,
-		"BusinessPartner": params.businessPartner
+		"BusinessPartner": params.businessPartner,
+
 	}
+
 
 	ediLog.getMaxVersion(query, function (msg, data) {
 		var obj = JSON.parse(msg);
@@ -1605,9 +1657,7 @@ exports.getLatestVersion = function (req, res) {
 }
 
 exports.getEdiGuideLog = function (req, res) {
-
 	var params = req.body;
-
 	//Stripping spaces
 	params.version = params.version.replace(' ', "[\\s]*");
 	// params.user=req.session.user.replace(' ','');

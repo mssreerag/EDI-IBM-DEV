@@ -12,6 +12,7 @@ var dbname = "code"
 var dbase;
 
 exports.get = function (searchQuery, callback) {
+    console.log("INSIDE CALLBACK");
     dbase.find(searchQuery, (err, documents) => {
         if (err) {
             console.log(err);
@@ -40,72 +41,72 @@ exports.get = function (searchQuery, callback) {
     });
 }
 
-exports.getOne = function (obj, numberOfElements, callback) {
+// exports.getOne = function (obj, numberOfElements, callback) {
 
-    for (var i = 0; i < numberOfElements; i++) {
-        console.log(i);
-        obj.data[i]['Code'] = "";
-        var params = obj.data[i];
-        var query = {
-            "selector": {
-                "Agency": params['Agency'],
-                "Version": params['Version'],
-                "ElementID": params['ElementID']
-            }
-        };
-        //		code.getOne(query, function (msg, data) {
+//     for (var i = 0; i < numberOfElements; i++) {
+//         console.log(i);
+//         obj.data[i]['Code'] = "";
+//         var params = obj.data[i];
+//         var query = {
+//             "selector": {
+//                 "Agency": params['Agency'],
+//                 "Version": params['Version'],
+//                 "ElementID": params['ElementID']
+//             }
+//         };
+//         //		code.getOne(query, function (msg, data) {
 
-        dbase.find(query, (err, documents) => {
-            // console.log(documents.docs);
-            var code = documents.docs
-            // var response = genRes.generateResponse(true, "found successfully");
-            // callback(response, code);
-            if (_.isNull(err) && code.length > 0) {
-                console.log("data");
-                if (data != null) {
-                    obj.data[i]['Code'] = JSON.parse(code);
-                }
-            } else if (code == undefined) {
-                console.log("undefined");
-                // callback(response, null);
-            } else if (code.length == 0) {
-                console.log("no code found");
-            } else {
-                var response = genRes.generateResponse(false, "there occured some error : " + err);
-                console.log("NO CONNECTION OR SOMETNG");
-            }
+//         dbase.find(query, (err, documents) => {
+//             // console.log(documents.docs);
+//             var code = documents.docs
+//             // var response = genRes.generateResponse(true, "found successfully");
+//             // callback(response, code);
+//             if (_.isNull(err) && code.length > 0) {
+//                 console.log("data");
+//                 if (data != null) {
+//                     obj.data[i]['Code'] = JSON.parse(code);
+//                 }
+//             } else if (code == undefined) {
+//                 console.log("undefined");
+//                 // callback(response, null);
+//             } else if (code.length == 0) {
+//                 console.log("no code found");
+//             } else {
+//                 var response = genRes.generateResponse(false, "there occured some error : " + err);
+//                 console.log("NO CONNECTION OR SOMETNG");
+//             }
 
-        });
-        //console.log(msg["message"]);
-        // console.log(obj.data[numberOfElementsRetrieved]['Code']);
-        // obj.data[numberOfElementsRetrieved]['code']=msg.status;
-        // numberOfElementsRetrieved++;
-        // getCodeWithElement(obj, res);
-
-
-    }
-    callback(true, obj);
+//         });
+//         //console.log(msg["message"]);
+//         // console.log(obj.data[numberOfElementsRetrieved]['Code']);
+//         // obj.data[numberOfElementsRetrieved]['code']=msg.status;
+//         // numberOfElementsRetrieved++;
+//         // getCodeWithElement(obj, res);
 
 
-}
+//     }
+//     callback(true, obj);
 
 
-exports.get = function (params, callback) {
-    Code
-        .findOne(params)
-        .exec(function (err, code) {
-            if (_.isNull(err) && code == null) {
-                var response = genRes.generateResponse(false, "No record");
-                callback(response, code);
-            } else if (_.isNull(err) && code != null) {
-                var response = genRes.generateResponse(true, "found successfully");
-                callback(response, code);
-            } else {
-                var response = genRes.generateResponse(false, "there occured some error : " + err);
-                callback(response, null);
-            }
-        });
-}
+// }
+
+
+// exports.get = function (params, callback) {
+//     Code
+//         .findOne(params)
+//         .exec(function (err, code) {
+//             if (_.isNull(err) && code == null) {
+//                 var response = genRes.generateResponse(false, "No record");
+//                 callback(response, code);
+//             } else if (_.isNull(err) && code != null) {
+//                 var response = genRes.generateResponse(true, "found successfully");
+//                 callback(response, code);
+//             } else {
+//                 var response = genRes.generateResponse(false, "there occured some error : " + err);
+//                 callback(response, null);
+//             }
+//         });
+// }
 
 
 function dbCloudantConnect() {
@@ -145,7 +146,7 @@ function dbCloudantConnect() {
 function test(){
 dbase.find({
     "selector":{
-       "_id": "081fc7f9124797334b2f976b010016df"
+       "_id": "09267bbc8d752fe022620c3adb0038df"
 }
  }, (err, documents) => {console.log("TESTTT",documents);
 
