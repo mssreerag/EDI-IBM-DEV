@@ -391,7 +391,7 @@ exports.getVersion = function (req, res) {
 			"Version": params.version
 		}
 	};
-	version.get(query, function (msg, data) {
+	cloudantVersion.get(query, function (msg, data) {
 		var obj = JSON.parse(msg);
 		obj.data = data;
 		res.send(JSON.stringify(obj));
@@ -424,7 +424,7 @@ exports.getTransactionSet = function (req, res) {
 			"TransactionSet": params.transactionSet
 		}
 	};
-	transactionSet.get(query, function (msg, data) {
+	cloudantTransactionSet.get(query, function (msg, data) {
 		var obj = JSON.parse(msg);
 		obj.data = data;
 		res.send(JSON.stringify(obj));
