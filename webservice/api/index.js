@@ -27,6 +27,7 @@ var cloudantElementUsage = require('./onlinecontrollers/ElementUsageDefs');
 var cloudantCode = require('./onlinecontrollers/code');
 var cloudantEdiLog = require('./onlinecontrollers/EdiLog');
 var cloudantSegmentDescription= require('./onlinecontrollers/SegmentDescription')
+var cloudantEdiDraft= require('./onlinecontrollers/EdiDraft')
 
 
 //Required include
@@ -60,10 +61,10 @@ var numberOfElementsRetrieved = 0;
 
 //firebase auth setup(admin not added)
 firebase.initializeApp(firebaseCredentials.firebaseConfig);
-
-mongoose.connect(database.url);
-mongoose.connection.on('error', console.error.bind(console, 'connection error:')); // Error handler
-var db = mongoose.connection;
+//monogo comment
+// mongoose.connect(database.url);
+// mongoose.connection.on('error', console.error.bind(console, 'connection error:')); // Error handler
+// var db = mongoose.connection;
 
 
 // cloudant start
@@ -369,7 +370,7 @@ exports.getAllAgency = function (req, res) {
 			}
 		}
 	};
-
+	console.log(query);
 	cloudantAgency.get(query, function (msg, data) {
 		var obj = JSON.parse(msg);
 		obj.data = data;
@@ -514,7 +515,7 @@ exports.getSegmentUsageFromPosition = function (req, res) {
 			"Position": params.segment
 		}
 	};
-	console.log(query);
+	console.log("get from position query",query);
 	console.log(req.body);
 	cloudantSegmentUsage.get(query, function (msg, data) {
 		var obj = JSON.parse(msg);
@@ -523,20 +524,22 @@ exports.getSegmentUsageFromPosition = function (req, res) {
 		//res.send(JSON.stringify(obj));
 		if (data && data.length > 0) {
 			query = {
-				"AGENCY": params.agency,
+				"selector":
+				{
+				"Agency": params.agency,
 				"Version": params.version,
 				"SegmentID": data[0]['SegmentID']
-
+				}
 			};
 
 			console.log("query for description: ", query);
-			segmentDescription.get(query, function (msg, data) {
+			cloudantSegmentDescription.get(query, function (msg, data) {
 				console.log(msg);
 				console.log(data, "message");
 				msg = JSON.parse(msg);
 				obj.status = msg.status;
 				obj.message = msg.message;
-				if (data == null)
+				if (data.length == 0)
 					obj.description = null;
 				else
 					obj.description = data[0]['Description'];
@@ -1621,9 +1624,10 @@ exports.getPdf = function (req, res) {
 
 exports.logEdiGuideCreation = function (req, res) {
 	var log = req.body;
+	console.log("here",(log));
 	log['Username'] = req.session.user;
 	log['Timestamp'] = Date.now();
-	cloudantEdiLog.push(JSON.stringify(log), function (success, msg) {
+	cloudantEdiLog.push(log, function (success, msg) {
 		if (success) {
 			console.log(msg);
 		} else {
@@ -1635,16 +1639,15 @@ exports.logEdiGuideCreation = function (req, res) {
 exports.getLatestVersion = function (req, res) {
 	var params = req.body;
 	console.log(params);
-	var query = {
+	var query = {"selector":{
 		"Agency": params.agency,
 		"Version": params.version,
 		"TransactionSet": params.transactionSet,
 		"BusinessPartner": params.businessPartner,
-
+}
 	}
 
-
-	ediLog.getMaxVersion(query, function (msg, data) {
+	cloudantEdiLog.getMaxVersion(query, function (msg, data) {
 		var obj = JSON.parse(msg);
 		if (data != null && data.length > 0) {
 			obj.data = data[0]['FileVersion'];
@@ -1685,7 +1688,7 @@ exports.getEdiGuideLog = function (req, res) {
 			// 	};
 			// }
 			// else if(req.session.privilege==0){
-			var query = {
+			var query = {"selector":{
 				"Username": new RegExp(params.createdBy, "i"),
 				"FileType": params.fileType,
 				"BusinessPartner": new RegExp(params.businessPartner, "i"),
@@ -1695,7 +1698,7 @@ exports.getEdiGuideLog = function (req, res) {
 					$gt: filterFrom,
 					$lt: filterTo
 				}
-			};
+			}};
 			// }
 
 			console.log(query);
@@ -1731,15 +1734,15 @@ exports.getReport = function (req, res) {
 	filterFrom = filterFrom.getTime() - (24 * 60 * 60 * 1000);
 	filterTo = filterTo.getTime() + (24 * 60 * 60 * 1000);
 
-	var query = {
+	var query = {"selector":{
 		"FileType": params.fileType,
 		"Timestamp": {
 			$gt: filterFrom,
 			$lt: filterTo
 		}
-	};
+	}};
 
-	ediLog.get(query, function (msg, data) {
+	cloudantEdiLog.get(query, function (msg, data) {
 		var obj = JSON.parse(msg);
 
 		console.log(data);
@@ -1778,7 +1781,7 @@ exports.createDraft = function (req, res) {
 
 	console.log(draft);
 
-	ediDraft.create(draft, function (str) {
+	cloudantEdiDraft.create(draft, function (str) {
 		console.log(str);
 		res.send(str);
 	});
@@ -1789,12 +1792,12 @@ exports.getDraft = function (req, res) {
 
 	console.log(req.body);
 
-	var query = {
+	var query = {"selector":{
 		'Username': req.session.user,
 		'FileType': req.body.fileType
-	};
+	}};
 
-	ediDraft.get(query, function (msg, data) {
+	cloudantEdiDraft.get(query, function (msg, data) {
 
 		console.log(msg);
 		console.log(data);
@@ -1804,7 +1807,7 @@ exports.getDraft = function (req, res) {
 
 		res.send(JSON.stringify(obj));
 
-		ediDraft.remove(query, function (msg, data) {
+		cloudantEdiDraft.remove(query, function (msg, data) {
 			// console.log(msg);
 			// console.log(data);
 		});

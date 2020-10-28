@@ -23,7 +23,7 @@ var http 			= require('http');
 var path 			= require('path');
 var api 			= require('./api');
 var multer 			= require('multer');
-var MongoStore		= require('connect-mongo')(session);
+// var MongoStore		= require('connect-mongo')(session);
 //var material_icon 	= require('material-design-icons');
 
 // CONFIGURATION
@@ -42,12 +42,12 @@ app.use(session({
 	secret: '4qewWLlCpAB8T2K',
 	saveUninitialized : true,
 	resave : true,
-	store : new MongoStore({ 	//using mongo-connect features
-		url: dbconnection.url,
-		ttl: sessionConfig.ttl,
-	//	autoRemove: 'disabled',
-		clear_interval: -1
-	})
+	// store : new MongoStore({ 	//using mongo-connect features
+	// 	url: dbconnection.url,
+	// 	ttl: sessionConfig.ttl,
+	// //	autoRemove: 'disabled',
+	// 	clear_interval: -1
+	// })
 }))
 
 app.use(bodyParser.urlencoded({						// parse application/x-www-form-urlencoded

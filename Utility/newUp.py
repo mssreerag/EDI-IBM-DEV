@@ -8,7 +8,7 @@ from cloudant.error import CloudantException
 from cloudant.result import Result, ResultByKey
 def uploadInChunks(array,database):
     print("entering" ,len(array))
-    size=20000
+    size=5000
     k=0
     numIteration=len(array)/size
     n=0
@@ -30,7 +30,6 @@ def progbar(curr, total, full_progbar):
     filled_progbar = round(frac*full_progbar)
     print('\r', '#'*filled_progbar + '-'*(full_progbar-filled_progbar), '[{:>7.2%}]'.format(frac), end='')
 client=pmon.MongoClient()
-db = "element_usage_defs"
 client = Cloudant.iam("50f9263f-7881-4a8f-8ee8-5280df1db57a-bluemix", "JzHBtp05D6pQTbTbr-KCmkKHmDnXFQ33gmmCEVNrer5d")
 client.connect()
 collectionList =  ["C1"]

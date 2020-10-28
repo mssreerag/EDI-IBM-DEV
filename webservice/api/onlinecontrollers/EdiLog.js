@@ -5,11 +5,12 @@ var genRes = require('./genres.js');
 var _ = require('underscore');
 var dbname = "edi_log"
 var dbase;
+var EdiLog = require('../models/EdiLog.js');
 
 
-exports.push = function (query, callback) {
-dbase.insert(query, (err, result) => {
-    console.log(JSON.parse(query));
+exports.push = function (params, callback) {
+dbase.insert(params, (err, result) => {
+    console.log(JSON.stringify(params));
     if (err) {
         var response_string = genRes.generateResponse(false , "There occured some error : "+err);
         callback(false,response_string);
@@ -20,6 +21,27 @@ dbase.insert(query, (err, result) => {
 });
 }
 
+exports.getMaxVersion = function (params,callback){
+	console.log('controller params');
+	console.log(params);
+	dbase
+	.find(params,function(err,ediLog)
+	{
+        console.log("Logg=",ediLog);
+		if( _.isNull(err)&&ediLog!=undefined&& ediLog.length > 0 ){
+			var response = genRes.generateResponse(true,"found successfully");
+			callback(response,ediLog);
+		}
+		else if( ediLog==undefined||ediLog.length == 0 ){
+			var response = genRes.generateResponse(true,"No EdiLog found");
+			callback(response,null);
+		}
+		else{
+			var response = genRes.generateResponse(false,"there occured some error : "+err);
+			callback(response,null);
+		}
+	});
+}
 
 function dbCloudantConnect() {
     return new Promise((resolve, reject) => {

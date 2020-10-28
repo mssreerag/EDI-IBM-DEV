@@ -7,12 +7,7 @@ var genRes = require('./genres.js');
 
 
 exports.get=function (searchQuery,callback) {
-        dbase.find(
-            // {
-            //     "selector": {
-            //           "Agency":"X"
-            //  } }
-        searchQuery   
+        dbase.find(searchQuery   
         , (err, documents) => {
             if (err) {
 				console.log(err);
