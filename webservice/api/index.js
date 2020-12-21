@@ -26,8 +26,8 @@ var cloudantSegmentUsage = require('./onlinecontrollers/SegmentUsage');
 var cloudantElementUsage = require('./onlinecontrollers/ElementUsageDefs');
 var cloudantCode = require('./onlinecontrollers/code');
 var cloudantEdiLog = require('./onlinecontrollers/EdiLog');
-var cloudantSegmentDescription= require('./onlinecontrollers/SegmentDescription')
-var cloudantEdiDraft= require('./onlinecontrollers/EdiDraft')
+var cloudantSegmentDescription = require('./onlinecontrollers/SegmentDescription')
+var cloudantEdiDraft = require('./onlinecontrollers/EdiDraft')
 
 
 //Required include
@@ -130,7 +130,6 @@ firebase.initializeApp(firebaseCredentials.firebaseConfig);
 
 // cloudant end
 
-var invalid_auth_error = "Invalid session : auth failed";
 
 exports.index = function (req, res) {
 	if (res) {
@@ -156,17 +155,17 @@ exports.authenticate = function (req, res) {
 		res.send({
 			status: false,
 			message: 'Parameter Problem',
-			pass: "sadas" + password,
+			pass: password,
 			usr: username
 		});
 	} else {
 		firebase.auth().signInWithEmailAndPassword(username, password).catch(function (error) {
+
 			var errorCode = error.code;
 			var errorMessage = error.message;
 			console.log(errorCode);
 			console.log(errorMessage);
-			console.log("Mayday!!!");
-			console.log(username);
+
 		});
 		firebase.auth().onAuthStateChanged(function (user) {
 			if (user) {
@@ -187,7 +186,7 @@ exports.authenticate = function (req, res) {
 					message: 'Authentication Success'
 				});
 			} else {
-				console.log("User not found or... something else");
+				console.log("User not found or... something else", user);
 			}
 		});
 
@@ -471,11 +470,10 @@ exports.getSegmentUsage = function (req, res) {
 	var obj = {};
 	var query = {
 		"selector": {
-
-		"Agency": params.agency,
-		"Version": params.version,
-		"TransactionSetID": params.transactionSet,
-		"SegmentID": params.segment
+			"Agency": params.agency,
+			"Version": params.version,
+			"TransactionSetID": params.transactionSet,
+			// "SegmentID": params.segment
 		}
 	};
 	cloudantSegmentUsage.get(query, function (msg, data) {
@@ -483,18 +481,17 @@ exports.getSegmentUsage = function (req, res) {
 		obj.data = data;
 		if (data != undefined && data.length > 0) {
 			query = {
-		"selector": {
-
-				"AGENCY": params.agency,
-				"Version": params.version,
-				"SegmentID": params.segment
-		}
+				"selector": {
+					"Agency": params.agency,
+					"Version": params.version,
+					"SegmentID": params.segment
+				}
 			};
 			cloudantSegmentDescription.get(query, function (msg, data) {
 				msg = JSON.parse(msg);
 				obj.status = msg.status;
 				obj.message = msg.message;
-				if(data!=null)
+				if (data != null)
 					obj.description = data[0]['Description'];
 				res.send(JSON.stringify(obj));
 			});
@@ -515,7 +512,7 @@ exports.getSegmentUsageFromPosition = function (req, res) {
 			"Position": params.segment
 		}
 	};
-	console.log("get from position query",query);
+	console.log("get from position query", query);
 	console.log(req.body);
 	cloudantSegmentUsage.get(query, function (msg, data) {
 		var obj = JSON.parse(msg);
@@ -524,11 +521,10 @@ exports.getSegmentUsageFromPosition = function (req, res) {
 		//res.send(JSON.stringify(obj));
 		if (data && data.length > 0) {
 			query = {
-				"selector":
-				{
-				"Agency": params.agency,
-				"Version": params.version,
-				"SegmentID": data[0]['SegmentID']
+				"selector": {
+					"Agency": params.agency,
+					"Version": params.version,
+					"SegmentID": data[0]['SegmentID']
 				}
 			};
 
@@ -641,7 +637,6 @@ exports.getElementUsageDefsWithCode = function (req, res) {
 
 		var obj = JSON.parse(msg);
 		obj.data = data;
-
 		// console.log(data);
 		// try{
 		numberOfElements = data.length;
@@ -709,9 +704,6 @@ exports.getElementUsageDefsWithCode = function (req, res) {
 		}
 	});
 }
-
-//Get Code Api /api/getCode
-
 exports.getCode = function (req, res) {
 	var params = req.body;
 	var query = {
@@ -721,7 +713,6 @@ exports.getCode = function (req, res) {
 			"ElementID": params.element
 		}
 	};
-
 	cloudantCode.get(query, function (msg, data) {
 		var obj = JSON.parse(msg);
 		obj.data = data;
@@ -1624,7 +1615,7 @@ exports.getPdf = function (req, res) {
 
 exports.logEdiGuideCreation = function (req, res) {
 	var log = req.body;
-	console.log("here",(log));
+	console.log("here", (log));
 	log['Username'] = req.session.user;
 	log['Timestamp'] = Date.now();
 	cloudantEdiLog.push(log, function (success, msg) {
@@ -1639,12 +1630,13 @@ exports.logEdiGuideCreation = function (req, res) {
 exports.getLatestVersion = function (req, res) {
 	var params = req.body;
 	console.log(params);
-	var query = {"selector":{
-		"Agency": params.agency,
-		"Version": params.version,
-		"TransactionSet": params.transactionSet,
-		"BusinessPartner": params.businessPartner,
-}
+	var query = {
+		"selector": {
+			"Agency": params.agency,
+			"Version": params.version,
+			"TransactionSet": params.transactionSet,
+			"BusinessPartner": params.businessPartner,
+		}
 	}
 
 	cloudantEdiLog.getMaxVersion(query, function (msg, data) {
@@ -1688,17 +1680,19 @@ exports.getEdiGuideLog = function (req, res) {
 			// 	};
 			// }
 			// else if(req.session.privilege==0){
-			var query = {"selector":{
-				"Username": new RegExp(params.createdBy, "i"),
-				"FileType": params.fileType,
-				"BusinessPartner": new RegExp(params.businessPartner, "i"),
-				"TransactionSet": new RegExp(params.transactionSet, "i"),
-				"Version": new RegExp(params.version, "i"),
-				"Timestamp": {
-					$gt: filterFrom,
-					$lt: filterTo
+			var query = {
+				"selector": {
+					"Username": new RegExp(params.createdBy, "i"),
+					"FileType": params.fileType,
+					"BusinessPartner": new RegExp(params.businessPartner, "i"),
+					"TransactionSet": new RegExp(params.transactionSet, "i"),
+					"Version": new RegExp(params.version, "i"),
+					"Timestamp": {
+						$gt: filterFrom,
+						$lt: filterTo
+					}
 				}
-			}};
+			};
 			// }
 
 			console.log(query);
@@ -1734,13 +1728,15 @@ exports.getReport = function (req, res) {
 	filterFrom = filterFrom.getTime() - (24 * 60 * 60 * 1000);
 	filterTo = filterTo.getTime() + (24 * 60 * 60 * 1000);
 
-	var query = {"selector":{
-		"FileType": params.fileType,
-		"Timestamp": {
-			$gt: filterFrom,
-			$lt: filterTo
+	var query = {
+		"selector": {
+			"FileType": params.fileType,
+			"Timestamp": {
+				$gt: filterFrom,
+				$lt: filterTo
+			}
 		}
-	}};
+	};
 
 	cloudantEdiLog.get(query, function (msg, data) {
 		var obj = JSON.parse(msg);
@@ -1792,10 +1788,12 @@ exports.getDraft = function (req, res) {
 
 	console.log(req.body);
 
-	var query = {"selector":{
-		'Username': req.session.user,
-		'FileType': req.body.fileType
-	}};
+	var query = {
+		"selector": {
+			'Username': req.session.user,
+			'FileType': req.body.fileType
+		}
+	};
 
 	cloudantEdiDraft.get(query, function (msg, data) {
 
